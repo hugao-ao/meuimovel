@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Financiamento Imobiliário</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --info-color: #0dcaf0;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            padding-top: 20px;
+            padding-bottom: 50px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            font-weight: 600;
+            background-color: var(--light-color);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--dark-color);
+        }
+        
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .tooltip-inner {
+            max-width: 300px;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .dark-mode {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+        
+        .dark-mode .card {
+            background-color: #454d55;
+            color: #f8f9fa;
+        }
+        
+        .dark-mode .card-header {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+        
+        .dark-mode .form-control {
+            background-color: #495057;
+            color: #f8f9fa;
+            border-color: #6c757d;
+        }
+        
+        .dark-mode .table {
+            color: #f8f9fa;
+        }
+        
+        .dark-mode .nav-tabs .nav-link {
+            color: #f8f9fa;
+        }
+        
+        .dark-mode .nav-tabs .nav-link.active {
+            background-color: #495057;
+            color: #f8f9fa;
+            border-color: #6c757d;
+        }
+        
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 0.75rem;
+            }
+            
+            .btn {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="theme-switch">
+            <button class="btn btn-sm btn-outline-secondary" id="themeToggle">
+                <i class="bi bi-moon"></i> Tema Escuro
+            </button>
+        </div>
+        
+        <header class="text-center mb-4">
+            <h1 class="display-4">Calculadora de Financiamento Imobiliário</h1>
+            <p class="lead">Simule, compare e analise diferentes cenários de financiamento imobiliário no Brasil</p>
+        </header>
+        
+        <!-- Formulário Principal -->
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="formTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="imovel-tab" data-bs-toggle="tab" data-bs-target="#imovel" type="button" role="tab" aria-controls="imovel" aria-selected="true">Dados do Imóvel</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="financiamento-tab" data-bs-toggle="tab" data-bs-target="#financiamento" type="button" role="tab" aria-controls="financiamento" aria-selected="false">Condições do Financiamento</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="comprador-tab" data-bs-toggle="tab" data-bs-target="#comprador" type="button" role="tab" aria-controls="comprador" aria-selected="false">Dados do Comprador</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="custos-tab" data-bs-toggle="tab" data-bs-target="#custos" type="button" role="tab" aria-controls="custos" aria-selected="false">Custos Adicionais</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <form id="calculadoraForm">
+                    <div class="tab-content" id="formTabsContent">
+                        <!-- Aba: Dados do Imóvel -->
+                        <div class="tab-pane fade show active" id="imovel" role="tabpanel" aria-labelledby="imovel-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="valorImovel" class="form-label">Valor do Imóvel (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Valor total do imóvel a ser financiado"></i></label>
+                                        <input type="number" class="form-control" id="valorImovel" required min="0" step="0.01">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="valorEntrada" class="form-label">Valor de Entrada (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Valor que será pago como entrada do financiamento"></i></label>
+                                        <input type="number" class="form-control" id="valorEntrada" min="0" step="0.01">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="estadoImovel" class="form-label">Estado do Imóvel <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Condição atual do imóvel"></i></label>
+                                        <select class="form-select" id="estadoImovel">
+                                            <option value="novo">Novo</option>
+                                            <option value="usado">Usado</option>
+                                            <option value="construcao">Em Construção</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="localizacao" class="form-label">UF <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Estado onde o imóvel está localizado"></i></label>
+                                        <select class="form-select" id="localizacao">
+                                            <option value="AC">Acre</option>
+                                            <option value="AL">Alagoas</option>
+                                            <option value="AP">Amapá</option>
+                                            <option value="AM">Amazonas</option>
+                                            <option value="BA">Bahia</option>
+                                            <option value="CE">Ceará</option>
+                                            <option value="DF">Distrito Federal</option>
+                                            <option value="ES">Espírito Santo</option>
+                                            <option value="GO">Goiás</option>
+                                            <option value="MA">Maranhão</option>
+                                            <option value="MT">Mato Grosso</option>
+                                            <option value="MS">Mato Grosso do Sul</option>
+                                            <option value="MG">Minas Gerais</option>
+                                            <option value="PA">Pará</option>
+                                            <option value="PB">Paraíba</option>
+                                            <option value="PR">Paraná</option>
+                                            <option value="PE">Pernambuco</option>
+                                            <option value="PI">Piauí</option>
+                                            <option value="RJ">Rio de Janeiro</option>
+                                            <option value="RN">Rio Grande do Norte</option>
+                                            <option value="RS">Rio Grande do Sul</option>
+                                            <option value="RO">Rondônia</option>
+                                            <option value="RR">Roraima</option>
+                                            <option value="SC">Santa Catarina</option>
+                                            <option value="SP">São Paulo</option>
+                                            <option value="SE">Sergipe</option>
+                                            <option value="TO">Tocantins</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="alert alert-info">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-info-circle-fill me-2"></i>
+                                        <div>
+                                            <strong>Valor a ser financiado:</strong> <span id="valorFinanciado">R$ 0,00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <div></div>
+                                <button type="button" class="btn btn-primary" id="btnProximoFinanciamento">Próximo <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Aba: Condições do Financiamento -->
+                        <div class="tab-pane fade" id="financiamento" role="tabpanel" aria-labelledby="financiamento-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="sistemaAmortizacao" class="form-label">Sistema de Amortização <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Método utilizado para calcular as parcelas do financiamento"></i></label>
+                                        <select class="form-select" id="sistemaAmortizacao">
+                                            <option value="sac">SAC - Sistema de Amortização Constante</option>
+                                            <option value="price">Tabela Price</option>
+                                            <option value="sacre">SACRE - Sistema de Amortização Crescente</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="sistemaCorrecao" class="form-label">Sistema de Correção Monetária <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Índice utilizado para corrigir o valor do financiamento ao longo do tempo"></i></label>
+                                        <select class="form-select" id="sistemaCorrecao">
+                                            <option value="tr">TR</option>
+                                            <option value="ipca">IPCA</option>
+                                            <option value="fixo">Taxa Fixa</option>
+                                            <option value="poupanca">Poupança</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="taxaJuros" class="form-label">Taxa de Juros Nominal (% ao ano) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Taxa de juros anual aplicada ao financiamento"></i></label>
+                                        <input type="number" step="0.01" class="form-control" id="taxaJuros" required min="0" max="30">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="prazoFinanciamento" class="form-label">Prazo (meses) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Duração total do financiamento em meses"></i></label>
+                                        <input type="number" class="form-control" id="prazoFinanciamento" required min="12" max="420">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="dataInicio" class="form-label">Data de Início <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Data de início do financiamento"></i></label>
+                                <input type="date" class="form-control" id="dataInicio">
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" id="btnVoltarImovel"><i class="bi bi-arrow-left"></i> Anterior</button>
+                                <button type="button" class="btn btn-primary" id="btnProximoComprador">Próximo <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Aba: Dados do Comprador -->
+                        <div class="tab-pane fade" id="comprador" role="tabpanel" aria-labelledby="comprador-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="rendaFamiliar" class="form-label">Renda Familiar Mensal (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Soma da renda mensal de todos os compradores"></i></label>
+                                        <input type="number" class="form-control" id="rendaFamiliar" required min="0" step="0.01">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="idadeComprador" class="form-label">Idade do Principal Comprador <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Idade do comprador principal para cálculo de seguros"></i></label>
+                                        <input type="number" class="form-control" id="idadeComprador" min="18" max="100">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="usarFgts" class="form-label">Usar FGTS? <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Indica se utilizará recursos do FGTS no financiamento"></i></label>
+                                        <select class="form-select" id="usarFgts">
+                                            <option value="nao">Não</option>
+                                            <option value="sim">Sim</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3" id="fgtsOptions" style="display:none;">
+                                        <label for="valorFgts" class="form-label">Valor disponível no FGTS (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Valor disponível para uso no financiamento"></i></label>
+                                        <input type="number" class="form-control" id="valorFgts" min="0" step="0.01">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="programaGoverno" class="form-label">Programa Governamental <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Programa habitacional do governo, se aplicável"></i></label>
+                                <select class="form-select" id="programaGoverno">
+                                    <option value="nenhum">Nenhum</option>
+                                    <option value="mcmv1">Minha Casa Minha Vida - Faixa 1</option>
+                                    <option value="mcmv2">Minha Casa Minha Vida - Faixa 2</option>
+                                    <option value="mcmv3">Minha Casa Minha Vida - Faixa 3</option>
+                                    <option value="mcmv4">Minha Casa Minha Vida - Faixa 4</option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" id="btnVoltarFinanciamento"><i class="bi bi-arrow-left"></i> Anterior</button>
+                                <button type="button" class="btn btn-primary" id="btnProximoCustos">Próximo <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Aba: Custos Adicionais -->
+                        <div class="tab-pane fade" id="custos" role="tabpanel" aria-labelledby="custos-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="taxaMIP" class="form-label">Taxa MIP (% ao ano) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Taxa do seguro de Morte e Invalidez Permanente"></i></label>
+                                        <input type="number" step="0.01" class="form-control" id="taxaMIP" value="0.44" min="0" max="5">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="taxaDFI" class="form-label">Taxa DFI (% ao ano) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Taxa do seguro de Danos Físicos ao Imóvel"></i></label>
+                                        <input type="number" step="0.01" class="form-control" id="taxaDFI" value="0.17" min="0" max="5">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="tarifaAvaliacao" class="form-label">Tarifa de Avaliação (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Custo da avaliação do imóvel pelo banco"></i></label>
+                                        <input type="number" class="form-control" id="tarifaAvaliacao" value="2500" min="0" step="0.01">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="custosCartorarios" class="form-label">Custos Cartorários Estimados (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Custos de registro e documentação em cartório"></i></label>
+                                        <input type="number" class="form-control" id="custosCartorarios" value="3000" min="0" step="0.01">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="outrosCustos" class="form-label">Outros Custos (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Outros custos adicionais não listados acima"></i></label>
+                                <input type="number" class="form-control" id="outrosCustos" value="0" min="0" step="0.01">
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" id="btnVoltarComprador"><i class="bi bi-arrow-left"></i> Anterior</button>
+                                <button type="button" class="btn btn-primary" id="btnCalcular">Calcular <i class="bi bi-calculator"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Painel de Resultados e Resumo -->
+        <div class="card" id="resultadosCard" style="display: none;">
+            <div class="card-header">Resumo do Financiamento</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Valor Financiado:</strong> <span id="resultadoValorFinanciado">R$ 0,00</span></p>
+                        <p><strong>Primeira Prestação:</strong> <span id="resultadoPrimeiraPrestacao">R$ 0,00</span></p>
+                        <p><strong>Total de Juros:</strong> <span id="resultadoTotalJuros">R$ 0,00</span></p>
+                        <p><strong>Total de Seguros:</strong> <span id="resultadoTotalSeguros">R$ 0,00</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Custo Efetivo Total (CET):</strong> <span id="resultadoCET">0,00%</span></p>
+                        <p><strong>Comprometimento de Renda:</strong> <span id="resultadoComprometimento">0,00%</span></p>
+                        <p><strong>Valor Final Pago:</strong> <span id="resultadoValorFinal">R$ 0,00</span></p>
+                        <p><strong>Prazo Total:</strong> <span id="resultadoPrazoTotal">0 meses</span></p>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <button class="btn btn-primary" id="btnSalvarCenario" data-bs-toggle="modal" data-bs-target="#salvarCenarioModal">
+                        <i class="bi bi-save"></i> Salvar Cenário
+                    </button>
+                    <button class="btn btn-secondary" id="btnExportarPDF">
+                        <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="btn btn-secondary" id="btnNovoCalculo">
+                        <i class="bi bi-plus-circle"></i> Novo Cálculo
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabela de Memória de Cálculo -->
+        <div class="card mt-4" id="memoriaCalculoCard" style="display: none;">
+            <div class="card-header">Memória de Cálculo</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm" id="tabelaMemoriaCalculo">
+                        <thead>
+                            <tr>
+                                <th>Parcela</th>
+                                <th>Data</th>
+                                <th>Prestação (R$)</th>
+                                <th>Amortização (R$)</th>
+                                <th>Juros (R$)</th>
+                                <th>MIP (R$)</th>
+                                <th>DFI (R$)</th>
+                                <th>Correção (R$)</th>
+                                <th>Saldo Devedor (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaMemoriaCalculoBody">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <nav>
+                    <ul class="pagination justify-content-center" id="paginacaoTabela">
+                        <!-- Paginação gerada via JavaScript -->
+                    </ul>
+                </nav>
+                <button class="btn btn-secondary" id="btnExportarCSV">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar CSV
+                </button>
+            </div>
+        </div>
+        
+        <!-- Visualizações Gráficas -->
+        <div class="card mt-4" id="graficosCard" style="display: none;">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="graficosTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="saldo-tab" data-bs-toggle="tab" data-bs-target="#saldoGrafico" type="button" role="tab" aria-controls="saldoGrafico" aria-selected="true">Evolução do Saldo</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="composicao-tab" data-bs-toggle="tab" data-bs-target="#composicaoGrafico" type="button" role="tab" aria-controls="composicaoGrafico" aria-selected="false">Composição das Parcelas</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="distribuicao-tab" data-bs-toggle="tab" data-bs-target="#distribuicaoGrafico" type="button" role="tab" aria-controls="distribuicaoGrafico" aria-selected="false">Distribuição de Pagamentos</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="comparativo-tab" data-bs-toggle="tab" data-bs-target="#comparativoGrafico" type="button" role="tab" aria-controls="comparativoGrafico" aria-selected="false">Comparativo</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="graficosTabContent">
+                    <div class="tab-pane fade show active" id="saldoGrafico" role="tabpanel" aria-labelledby="saldo-tab">
+                        <canvas id="graficoSaldoDevedor" height="300"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="composicaoGrafico" role="tabpanel" aria-labelledby="composicao-tab">
+                        <canvas id="graficoComposicaoParcelas" height="300"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="distribuicaoGrafico" role="tabpanel" aria-labelledby="distribuicao-tab">
+                        <canvas id="graficoDistribuicao" height="300"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="comparativoGrafico" role="tabpanel" aria-labelledby="comparativo-tab">
+                        <canvas id="graficoComparativo" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gerenciador de Cenários -->
+        <div class="card mt-4" id="cenariosCard" style="display: none;">
+            <div class="card-header">Cenários Salvos</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="tabelaCenarios">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Valor Financiado</th>
+                                <th>Sistema</th>
+                                <th>Prazo</th>
+                                <th>Taxa</th>
+                                <th>Primeira Parcela</th>
+                                <th>Valor Final</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaCenariosBody">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 d-flex flex-wrap gap-2">
+                    <button class="btn btn-secondary" id="btnExportarCenarios">
+                        <i class="bi bi-download"></i> Exportar Cenários
+                    </button>
+                    <button class="btn btn-secondary" id="btnImportarCenarios">
+                        <i class="bi bi-upload"></i> Importar Cenários
+                    </button>
+                    <input type="file" id="importarCenariosFile" style="display:none">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Análises Comparativas -->
+        <div class="card mt-4" id="analiseCard" style="display: none;">
+            <div class="card-header">Análise Comparativa</div>
+            <div class="card-body">
+                <div id="analiseUltimoCenario">
+                    <h5>Análise do Último Cenário</h5>
+                    <div id="analiseUltimoCenarioConteudo" class="mb-4">
+                        <!-- Preenchido via JavaScript -->
+                        <div class="alert alert-info">
+                            <p>Calcule um cenário para visualizar a análise detalhada.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="analiseComparativa" class="mt-4">
+                    <h5>Comparação entre Cenários</h5>
+                    <div class="form-group">
+                        <label>Selecione os cenários para comparar:</label>
+                        <div id="checkboxesCenarios" class="mb-3">
+                            <!-- Checkboxes gerados via JavaScript -->
+                            <div class="alert alert-info">
+                                <p>Salve pelo menos dois cenários para habilitar a comparação.</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary mt-2" id="btnCompararCenarios" disabled>
+                            <i class="bi bi-bar-chart"></i> Comparar Selecionados
+                        </button>
+                    </div>
+                    <div id="resultadoComparacao" class="mt-3">
+                        <!-- Preenchido via JavaScript -->
+                    </div>
+                    <div class="mt-3">
+                        <canvas id="graficoComparacaoCenarios" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ferramentas Adicionais -->
+        <div class="card mt-4" id="ferramentasCard" style="display: none;">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="ferramentasTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="amortizacao-tab" data-bs-toggle="tab" data-bs-target="#amortizacaoExtra" type="button" role="tab" aria-controls="amortizacaoExtra" aria-selected="true">Amortizações Extraordinárias</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="portabilidade-tab" data-bs-toggle="tab" data-bs-target="#portabilidade" type="button" role="tab" aria-controls="portabilidade" aria-selected="false">Portabilidade</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="capacidade-tab" data-bs-toggle="tab" data-bs-target="#capacidade" type="button" role="tab" aria-controls="capacidade" aria-selected="false">Capacidade de Pagamento</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="ferramentasTabContent">
+                    <!-- Amortizações Extraordinárias -->
+                    <div class="tab-pane fade show active" id="amortizacaoExtra" role="tabpanel" aria-labelledby="amortizacao-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="valorAmortizacao" class="form-label">Valor da Amortização (R$)</label>
+                                    <input type="number" class="form-control" id="valorAmortizacao" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="parcelaAmortizacao" class="form-label">Aplicar após parcela nº</label>
+                                    <input type="number" class="form-control" id="parcelaAmortizacao" min="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tipoReducao" class="form-label">Tipo de Redução</label>
+                                    <select class="form-select" id="tipoReducao">
+                                        <option value="parcela">Reduzir valor da parcela</option>
+                                        <option value="prazo">Reduzir prazo</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" id="btnSimularAmortizacao">
+                                    <i class="bi bi-calculator"></i> Simular Amortização
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="resultadoAmortizacao" class="border p-3 rounded">
+                                    <h6>Resultado da Simulação</h6>
+                                    <div id="resultadoAmortizacaoConteudo">
+                                        <p class="text-muted">Preencha os dados e clique em Simular Amortização.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Portabilidade -->
+                    <div class="tab-pane fade" id="portabilidade" role="tabpanel" aria-labelledby="portabilidade-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Condições Atuais</h6>
+                                <div class="mb-3">
+                                    <label for="saldoDevedorAtual" class="form-label">Saldo Devedor Atual (R$)</label>
+                                    <input type="number" class="form-control" id="saldoDevedorAtual" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="taxaJurosAtual" class="form-label">Taxa de Juros Atual (% ao ano)</label>
+                                    <input type="number" class="form-control" id="taxaJurosAtual" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="prazoRestante" class="form-label">Prazo Restante (meses)</label>
+                                    <input type="number" class="form-control" id="prazoRestante" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Novas Condições</h6>
+                                <div class="mb-3">
+                                    <label for="taxaJurosNova" class="form-label">Nova Taxa de Juros (% ao ano)</label>
+                                    <input type="number" class="form-control" id="taxaJurosNova" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="prazoNovo" class="form-label">Novo Prazo (meses)</label>
+                                    <input type="number" class="form-control" id="prazoNovo" min="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="custoPortabilidade" class="form-label">Custo da Portabilidade (R$)</label>
+                                    <input type="number" class="form-control" id="custoPortabilidade" min="0" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-primary" id="btnSimularPortabilidade">
+                                <i class="bi bi-calculator"></i> Simular Portabilidade
+                            </button>
+                        </div>
+                        <div class="mt-3" id="resultadoPortabilidade">
+                            <!-- Preenchido via JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Capacidade de Pagamento -->
+                    <div class="tab-pane fade" id="capacidade" role="tabpanel" aria-labelledby="capacidade-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="rendaFamiliarCapacidade" class="form-label">Renda Familiar Mensal (R$)</label>
+                                    <input type="number" class="form-control" id="rendaFamiliarCapacidade" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="compromissosMensais" class="form-label">Compromissos Mensais (R$)</label>
+                                    <input type="number" class="form-control" id="compromissosMensais" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="percentualMaximo" class="form-label">Percentual Máximo de Comprometimento (%)</label>
+                                    <input type="number" class="form-control" id="percentualMaximo" min="0" max="100" step="0.1" value="30">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="taxaJurosCapacidade" class="form-label">Taxa de Juros (% ao ano)</label>
+                                    <input type="number" class="form-control" id="taxaJurosCapacidade" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="prazoCapacidade" class="form-label">Prazo (meses)</label>
+                                    <input type="number" class="form-control" id="prazoCapacidade" min="12" max="420">
+                                </div>
+                                <button class="btn btn-primary" id="btnCalcularCapacidade">
+                                    <i class="bi bi-calculator"></i> Calcular Capacidade
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="resultadoCapacidade" class="border p-3 rounded">
+                                    <h6>Resultado da Análise</h6>
+                                    <div id="resultadoCapacidadeConteudo">
+                                        <p class="text-muted">Preencha os dados e clique em Calcular Capacidade.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Glossário e Informações -->
+        <div class="card mt-4" id="glossarioCard" style="display: none;">
+            <div class="card-header">Glossário e Informações</div>
+            <div class="card-body">
+                <div class="accordion" id="accordionGlossario">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                Sistemas de Amortização
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionGlossario">
+                            <div class="accordion-body">
+                                <p><strong>SAC (Sistema de Amortização Constante):</strong> Neste sistema, o valor da amortização é constante ao longo de todo o financiamento. Como o saldo devedor diminui a cada mês, o valor dos juros também diminui, fazendo com que o valor da prestação seja decrescente ao longo do tempo.</p>
+                                <p><strong>Tabela Price:</strong> Também conhecido como Sistema Francês de Amortização, caracteriza-se por prestações iguais ao longo de todo o financiamento. No início, a maior parte da prestação é composta por juros, e com o passar do tempo, a parcela de amortização aumenta.</p>
+                                <p><strong>SACRE (Sistema de Amortização Crescente):</strong> É um sistema híbrido que combina características do SAC e da Tabela Price. A amortização é crescente ao longo do tempo, resultando em prestações mais estáveis que no SAC, mas com redução mais rápida do saldo devedor que na Tabela Price.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Sistemas de Correção Monetária
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionGlossario">
+                            <div class="accordion-body">
+                                <p><strong>TR (Taxa Referencial):</strong> É uma taxa de juros de referência, instituída pela Lei nº 8.177/91, calculada pelo Banco Central do Brasil. É utilizada principalmente em financiamentos habitacionais e cadernetas de poupança.</p>
+                                <p><strong>IPCA (Índice Nacional de Preços ao Consumidor Amplo):</strong> É o índice oficial de inflação do Brasil, calculado pelo IBGE. Quando utilizado em financiamentos, o saldo devedor é corrigido mensalmente pela variação do IPCA.</p>
+                                <p><strong>Taxa Fixa:</strong> Neste sistema, não há correção monetária do saldo devedor. A taxa de juros contratada permanece constante durante todo o financiamento.</p>
+                                <p><strong>Poupança:</strong> Utiliza a remuneração básica da caderneta de poupança como índice de correção do saldo devedor.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Seguros Obrigatórios
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionGlossario">
+                            <div class="accordion-body">
+                                <p><strong>MIP (Morte e Invalidez Permanente):</strong> Este seguro quita o saldo devedor do financiamento em caso de morte ou invalidez permanente do mutuário. O valor do prêmio é calculado sobre o saldo devedor e varia conforme a idade do mutuário.</p>
+                                <p><strong>DFI (Danos Físicos ao Imóvel):</strong> Este seguro cobre danos físicos ao imóvel causados por incêndio, explosão, vendaval, desmoronamento, entre outros. O valor do prêmio é calculado sobre o valor de avaliação do imóvel.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                Programas Governamentais
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionGlossario">
+                            <div class="accordion-body">
+                                <p><strong>Minha Casa Minha Vida:</strong> Programa habitacional do governo federal que oferece condições especiais de financiamento para famílias de diferentes faixas de renda.</p>
+                                <p><strong>Faixa 1:</strong> Destinada a famílias com renda mensal bruta de até R$ 2.640.</p>
+                                <p><strong>Faixa 2:</strong> Destinada a famílias com renda mensal bruta entre R$ 2.640,01 e R$ 4.400.</p>
+                                <p><strong>Faixa 3:</strong> Destinada a famílias com renda mensal bruta entre R$ 4.400,01 e R$ 8.000.</p>
+                                <p><strong>Faixa 4:</strong> Destinada a famílias com renda mensal bruta até R$ 11.000 (antiga faixa 1,5 do Sistema Brasileiro de Poupança e Empréstimo - SBPE).</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                Termos Financeiros
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionGlossario">
+                            <div class="accordion-body">
+                                <p><strong>CET (Custo Efetivo Total):</strong> Representa o custo total do financiamento, incluindo não apenas os juros, mas também todos os encargos e despesas, como seguros, tarifas bancárias e impostos.</p>
+                                <p><strong>Amortização:</strong> É a parcela do pagamento mensal destinada a reduzir o saldo devedor do financiamento.</p>
+                                <p><strong>Juros:</strong> É a remuneração cobrada pelo banco pelo empréstimo do dinheiro, calculada sobre o saldo devedor.</p>
+                                <p><strong>Saldo Devedor:</strong> É o valor que ainda resta a pagar do financiamento, após descontadas as amortizações já realizadas.</p>
+                                <p><strong>Amortização Extraordinária:</strong> É o pagamento adicional, além da prestação mensal, destinado a reduzir o saldo devedor do financiamento.</p>
+                                <p><strong>Portabilidade:</strong> É a transferência do financiamento de uma instituição financeira para outra, geralmente em busca de melhores condições de juros e prazo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Disclaimer</h5>
+                    <div class="alert alert-warning">
+                        <p>Esta ferramenta é apenas uma simulação e os resultados apresentados são aproximados. As condições reais de financiamento podem variar de acordo com a política de cada instituição financeira, perfil de crédito do cliente e condições de mercado. Consulte sempre um profissional especializado antes de tomar decisões financeiras importantes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal para Salvar Cenário -->
+        <div class="modal fade" id="salvarCenarioModal" tabindex="-1" aria-labelledby="salvarCenarioModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="salvarCenarioModalLabel">Salvar Cenário</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nomeCenario" class="form-label">Nome do Cenário</label>
+                            <input type="text" class="form-control" id="nomeCenario" placeholder="Ex: Apartamento 2 quartos - Banco XYZ">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btnConfirmarSalvarCenario">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
