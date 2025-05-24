@@ -121,17 +121,80 @@ function clearMemory() {
 
 function addToMemory(message, level = 0) {
     const timestamp = new Date().toLocaleTimeString('pt-BR');
-    const indentedMessage = '&nbsp;'.repeat(level * 4) + message;
-    memoryLog.push(`${timestamp}: ${indentedMessage}`);
+    const category = getCategoryFromLevel(level);
     
-    const memoryLogElement = document.getElementById('memoryLog');
-    if (memoryLogElement) {
-        const entry = document.createElement('div');
-        entry.classList.add('memory-item');
-        entry.innerHTML = `<strong>${timestamp}:</strong> ${indentedMessage}`;
-        memoryLogElement.appendChild(entry);
-        memoryLogElement.scrollTop = memoryLogElement.scrollHeight; // Auto-scroll
+    // Armazena a entrada no array de memória
+    memoryLog.push({
+        timestamp: timestamp,
+        category: category,
+        message: message,
+        level: level
+    });
+    
+    // Atualiza a tabela na interface, se existir
+    updateMemoryTable();
+}
+
+function getCategoryFromLevel(level) {
+    switch(level) {
+        case 0: return "Principal";
+        case 1: return "Etapa";
+        case 2: return "Cenário";
+        case 3: return "Detalhe";
+        case 4: return "Cálculo";
+        default: return "Info";
     }
+}
+
+function updateMemoryTable() {
+    const memoryLogElement = document.getElementById('memoryLog');
+    if (!memoryLogElement) return;
+    
+    // Limpa o conteúdo atual
+    memoryLogElement.innerHTML = '';
+    
+    // Cria a tabela
+    const table = document.createElement('table');
+    table.className = 'table table-striped table-hover table-sm';
+    
+    // Cabeçalho da tabela
+    const thead = document.createElement('thead');
+    thead.className = 'table-dark';
+    thead.innerHTML = `
+        <tr>
+            <th scope="col">Horário</th>
+            <th scope="col">Categoria</th>
+            <th scope="col">Descrição</th>
+        </tr>
+    `;
+    table.appendChild(thead);
+    
+    // Corpo da tabela
+    const tbody = document.createElement('tbody');
+    
+    // Adiciona cada entrada do log como uma linha da tabela
+    memoryLog.forEach(entry => {
+        const row = document.createElement('tr');
+        
+        // Aplica classes diferentes baseadas no nível para facilitar a visualização
+        if (entry.level === 0) row.className = 'table-primary';
+        else if (entry.level === 1) row.className = 'table-info';
+        else if (entry.level === 2) row.className = 'table-success';
+        
+        row.innerHTML = `
+            <td><small>${entry.timestamp}</small></td>
+            <td><small>${entry.category}</small></td>
+            <td>${'&nbsp;'.repeat(entry.level)} ${entry.message}</td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+    
+    table.appendChild(tbody);
+    memoryLogElement.appendChild(table);
+    
+    // Auto-scroll para o final
+    memoryLogElement.scrollTop = memoryLogElement.scrollHeight;
 }
 
 // --- Coleta de Inputs ---
@@ -142,7 +205,7 @@ function getInputs() {
         valorImovel: parseCurrency(document.getElementById('valorImovel').value),
         areaImovel: parseFloat(document.getElementById('areaImovel').value) || 0,
         idadeComprador: parseInt(document.getElementById('idadeComprador').value) || 35,
-        tempoPermanencia: parseInt(document.getElementById('tempoPermanencia').value) || 10,
+        tempoPermanencia: parseInt(document.getElementById('tempoPermanencia').value) || 120, // Em meses
         inflacaoAnual: parsePercent(document.getElementById('inflacaoAnual').value),
         taxaSelic: parsePercent(document.getElementById('taxaSelic').value),
         localizacao: document.getElementById('localizacao').value,
@@ -160,7 +223,7 @@ function getInputs() {
         percentualComprometimento: parsePercent(document.getElementById('percentualComprometimento').value),
         taxaJurosFinanciamento: parsePercent(document.getElementById('taxaJurosFinanciamento').value),
         sistemaAmortizacao: document.getElementById('sistemaAmortizacao').value,
-        prazoFinanciamento: parseInt(document.getElementById('prazoFinanciamento').value) * 12 || 360, // Em meses
+        prazoFinanciamento: parseInt(document.getElementById('prazoFinanciamento').value) || 360, // Já em meses
         custosAvaliacao: parseCurrency(document.getElementById('custosAvaliacao').value),
         taxaAdministracao: parseCurrency(document.getElementById('taxaAdministracao').value),
         seguroMIP: parsePercent(document.getElementById('seguroMIP').value),
@@ -169,7 +232,7 @@ function getInputs() {
         // Consórcio
         valorCartaCredito: parseCurrency(document.getElementById('valorCartaCredito').value),
         taxaAdministracaoConsorcio: parsePercent(document.getElementById('taxaAdministracaoConsorcio').value),
-        prazoConsorcio: parseInt(document.getElementById('prazoConsorcio').value) * 12 || 120, // Em meses
+        prazoConsorcio: parseInt(document.getElementById('prazoConsorcio').value) || 120, // Já em meses
         valorLanceInicial: parseCurrency(document.getElementById('valorLanceInicial').value),
         fundoReserva: parsePercent(document.getElementById('fundoReserva').value),
         seguroPrestamista: parsePercent(document.getElementById('seguroPrestamista').value),
@@ -278,7 +341,7 @@ function calcular() {
 function calculateAluguel(inputs) {
     addToMemory('Iniciando cálculo do Aluguel.', 2);
     const { tempoPermanencia, valorAluguelAtual, taxaReajusteAluguel, depositoCaucao, custoSeguroFianca, taxaAdministracaoImobiliaria, inflacaoAnual, custoOportunidade, valorDisponivel, valorImovel } = inputs;
-    const meses = tempoPermanencia * 12;
+    const meses = tempoPermanencia; // Já está em meses
     let custoTotalAluguel = 0;
     let aluguelMensalAtual = valorAluguelAtual;
     let custosMensais = [];
@@ -286,7 +349,7 @@ function calculateAluguel(inputs) {
     let patrimonioFinal = patrimonioInvestido;
     let custoOportunidadeCaucao = 0;
 
-    addToMemory(`Período de análise: ${tempoPermanencia} anos (${meses} meses).`, 3);
+    addToMemory(`Período de análise: ${tempoPermanencia} meses.`, 3);
     addToMemory(`Aluguel inicial: ${formatCurrency(valorAluguelAtual)}.`, 3);
     addToMemory(`Taxa de reajuste anual do aluguel: ${formatPercent(taxaReajusteAluguel)}.`, 3);
     addToMemory(`Depósito caução: ${formatCurrency(depositoCaucao)}.`, 3);
@@ -297,7 +360,7 @@ function calculateAluguel(inputs) {
 
     // Custo de oportunidade do depósito caução
     if (depositoCaucao > 0) {
-        custoOportunidadeCaucao = depositoCaucao * (Math.pow(1 + custoOportunidade, tempoPermanencia) - 1);
+        custoOportunidadeCaucao = depositoCaucao * (Math.pow(1 + custoOportunidade, tempoPermanencia/12) - 1);
         addToMemory(`Custo de oportunidade do depósito caução (não devolvido rendimento): ${formatCurrency(custoOportunidadeCaucao)}.`, 3);
         custoTotalAluguel += custoOportunidadeCaucao; // Adiciona ao custo total
     }
@@ -323,7 +386,7 @@ function calculateAluguel(inputs) {
         // Subtrai o custo do aluguel do patrimônio (simulando que sairia do rendimento/principal)
         patrimonioFinal -= custoMes; 
 
-        // Reajuste anual do aluguel (no início de cada ano, exceto o primeiro)
+        // Reajuste anual do aluguel (a cada 12 meses, exceto o primeiro)
         if (mes % 12 === 0 && mes < meses) {
             const aluguelAnterior = aluguelMensalAtual;
             aluguelMensalAtual *= (1 + taxaReajusteAluguel);
@@ -356,7 +419,7 @@ function calculateAluguel(inputs) {
 function calculateCompraVista(inputs) {
     addToMemory('Iniciando cálculo da Compra à Vista.', 2);
     const { tempoPermanencia, valorImovel, custoOportunidade, custosEscritura, valorITBI, custosReformaInicial, valorIPTU, valorCondominio, custosManutenção, valorSeguroImovel, custosMobilia, taxaValorizacaoImovel, inflacaoAnual } = inputs;
-    const meses = tempoPermanencia * 12;
+    const meses = tempoPermanencia; // Já está em meses
     let custoTotalCompra = 0;
     let custosMensais = [];
     let valorImovelAtualizado = valorImovel;
@@ -368,8 +431,8 @@ function calculateCompraVista(inputs) {
     custoTotalCompra += custoInicialTotal;
 
     // Custo de Oportunidade do Capital Inicial
-    const custoOportunidadeTotal = custoInicialTotal * (Math.pow(1 + custoOportunidade, tempoPermanencia) - 1);
-    addToMemory(`Custo de oportunidade do capital inicial (${formatCurrency(custoInicialTotal)} @ ${formatPercent(custoOportunidade)} a.a. por ${tempoPermanencia} anos): ${formatCurrency(custoOportunidadeTotal)}.`, 3);
+    const custoOportunidadeTotal = custoInicialTotal * (Math.pow(1 + custoOportunidade, tempoPermanencia/12) - 1);
+    addToMemory(`Custo de oportunidade do capital inicial (${formatCurrency(custoInicialTotal)} @ ${formatPercent(custoOportunidade)} a.a. por ${tempoPermanencia} meses): ${formatCurrency(custoOportunidadeTotal)}.`, 3);
     custoTotalCompra += custoOportunidadeTotal;
 
     // Custos Recorrentes Mensais e Anuais
@@ -399,9 +462,9 @@ function calculateCompraVista(inputs) {
     }
     
     // Valorização do imóvel no período
-    const valorFinalImovel = valorImovel * Math.pow(1 + taxaValorizacaoImovel, tempoPermanencia);
+    const valorFinalImovel = valorImovel * Math.pow(1 + taxaValorizacaoImovel, tempoPermanencia/12);
     const ganhoValorizacao = valorFinalImovel - valorImovel;
-    addToMemory(`Valorização estimada do imóvel em ${tempoPermanencia} anos: ${formatCurrency(ganhoValorizacao)} (Valor final: ${formatCurrency(valorFinalImovel)}).`, 3);
+    addToMemory(`Valorização estimada do imóvel em ${tempoPermanencia} meses: ${formatCurrency(ganhoValorizacao)} (Valor final: ${formatCurrency(valorFinalImovel)}).`, 3);
 
     // Patrimônio Final = Valor final do imóvel
     const patrimonioFinal = valorFinalImovel;
@@ -430,7 +493,7 @@ function calculateFinanciamento(inputs) {
     addToMemory('Iniciando cálculo do Financiamento.', 2);
     const { tempoPermanencia, valorImovel, valorEntrada, taxaJurosFinanciamento, prazoFinanciamento, sistemaAmortizacao, custosEscritura, valorITBI, custosReformaInicial, custosAvaliacao, taxaAdministracao, seguroMIP, seguroDFI, valorIPTU, valorCondominio, custosManutenção, valorSeguroImovel, custosMobilia, taxaValorizacaoImovel, inflacaoAnual, custoOportunidade } = inputs;
     
-    const mesesAnalise = tempoPermanencia * 12;
+    const mesesAnalise = tempoPermanencia; // Já está em meses
     const valorFinanciado = valorImovel - valorEntrada;
     
     if (valorFinanciado <= 0) {
@@ -460,7 +523,7 @@ function calculateFinanciamento(inputs) {
     custoTotalFinanciamento += custoInicialTotal;
 
     // Custo de Oportunidade do Capital Inicial (Entrada + Custos)
-    const custoOportunidadeInicial = custoInicialTotal * (Math.pow(1 + custoOportunidade, tempoPermanencia) - 1);
+    const custoOportunidadeInicial = custoInicialTotal * (Math.pow(1 + custoOportunidade, tempoPermanencia/12) - 1);
     addToMemory(`Custo de oportunidade do capital inicial (${formatCurrency(custoInicialTotal)} @ ${formatPercent(custoOportunidade)} a.a.): ${formatCurrency(custoOportunidadeInicial)}.`, 3);
     custoTotalFinanciamento += custoOportunidadeInicial;
 
@@ -552,8 +615,8 @@ function calculateFinanciamento(inputs) {
     }
 
     // Valor final do imóvel
-    const valorFinalImovel = valorImovel * Math.pow(1 + taxaValorizacaoImovel, tempoPermanencia);
-    addToMemory(`Valorização estimada do imóvel em ${tempoPermanencia} anos: ${formatCurrency(valorFinalImovel - valorImovel)} (Valor final: ${formatCurrency(valorFinalImovel)}).`, 3);
+    const valorFinalImovel = valorImovel * Math.pow(1 + taxaValorizacaoImovel, tempoPermanencia/12);
+    addToMemory(`Valorização estimada do imóvel em ${tempoPermanencia} meses: ${formatCurrency(valorFinalImovel - valorImovel)} (Valor final: ${formatCurrency(valorFinalImovel)}).`, 3);
 
     // Patrimônio Final = Valor final do imóvel - Saldo Devedor restante
     const patrimonioFinal = valorFinalImovel - saldoDevedor;
@@ -590,7 +653,7 @@ function calculateConsorcio(inputs) {
     addToMemory('Iniciando cálculo do Consórcio.', 2);
     const { tempoPermanencia, valorImovel, valorCartaCredito, taxaAdministracaoConsorcio, prazoConsorcio, valorLanceInicial, fundoReserva, seguroPrestamista, tempoMedioContemplacao, custosEscritura, valorITBI, custosReformaInicial, custosMobilia, valorIPTU, valorCondominio, custosManutenção, valorSeguroImovel, taxaValorizacaoImovel, inflacaoAnual, custoOportunidade } = inputs;
 
-    const mesesAnalise = tempoPermanencia * 12;
+    const mesesAnalise = tempoPermanencia; // Já está em meses
     const cartaCredito = valorCartaCredito || valorImovel; // Usa valor do imóvel se não especificado
     
     if (cartaCredito <= 0) {
@@ -625,7 +688,7 @@ function calculateConsorcio(inputs) {
 
     // Custo de Oportunidade do Lance Inicial (se houver)
     if (valorLanceInicial > 0) {
-        const custoOportunidadeLance = valorLanceInicial * (Math.pow(1 + custoOportunidade, tempoPermanencia) - 1);
+        const custoOportunidadeLance = valorLanceInicial * (Math.pow(1 + custoOportunidade, tempoPermanencia/12) - 1);
         addToMemory(`Custo de oportunidade do lance inicial (${formatCurrency(valorLanceInicial)} @ ${formatPercent(custoOportunidade)} a.a.): ${formatCurrency(custoOportunidadeLance)}.`, 3);
         custoTotalConsorcio += custoOportunidadeLance;
         custoOportunidadeTotal += custoOportunidadeLance;
@@ -723,7 +786,7 @@ function calculateConsorcio(inputs) {
         // Se não foi contemplado, o patrimônio é o valor pago + rendimento (simplificado)
         // Uma análise mais complexa consideraria o rendimento do dinheiro não gasto
         patrimonioFinal = 0; // Considera-se que não adquiriu o bem
-        addToMemory(`Não houve contemplação dentro do período de análise (${tempoPermanencia} anos). Patrimônio imobiliário final = 0.`, 3);
+        addToMemory(`Não houve contemplação dentro do período de análise (${tempoPermanencia} meses). Patrimônio imobiliário final = 0.`, 3);
     }
 
     const custoMensalMedio = custoTotalConsorcio / mesesAnalise;
@@ -1102,7 +1165,7 @@ function gerarAnaliseConclusiva(resultados, inputs) {
     const melhorOpcao = opcoes[0];
     const segundaOpcao = opcoes[1];
 
-    let textoAnalise = `<p>Considerando um período de <strong>${inputs.tempoPermanencia} anos</strong> e os dados fornecidos, a análise financeira indica que a opção <strong>${melhorOpcao.nome}</strong> apresenta o menor custo total estimado (${formatCurrency(melhorOpcao.custoTotal)}).</p>`;
+    let textoAnalise = `<p>Considerando um período de <strong>${inputs.tempoPermanencia} meses</strong> e os dados fornecidos, a análise financeira indica que a opção <strong>${melhorOpcao.nome}</strong> apresenta o menor custo total estimado (${formatCurrency(melhorOpcao.custoTotal)}).</p>`;
 
     textoAnalise += `<p>Comparativamente, a segunda opção mais econômica seria <strong>${segundaOpcao.nome}</strong>, com um custo total de ${formatCurrency(segundaOpcao.custoTotal)}, uma diferença de ${formatCurrency(segundaOpcao.custoTotal - melhorOpcao.custoTotal)} em relação à melhor opção.</p>`;
 
@@ -1161,20 +1224,29 @@ function imprimirResultados() {
 }
 
 function exportarMemoriaCalculos() {
-    // Lógica para gerar um arquivo .txt ou .csv com o memoryLog
+    // Lógica para gerar um arquivo CSV com o memoryLog
     if (memoryLog.length === 0) {
         alert('Memória de cálculos está vazia.');
         return;
     }
     
-    const content = memoryLog.join('\n');
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    // Cria o cabeçalho do CSV
+    let csvContent = "Horário,Categoria,Descrição\n";
+    
+    // Adiciona cada entrada do log
+    memoryLog.forEach(entry => {
+        // Escapa aspas duplas no texto da mensagem
+        const escapedMessage = entry.message.replace(/"/g, '""');
+        csvContent += `${entry.timestamp},"${entry.category}","${escapedMessage}"\n`;
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'memoria_calculos_imovel.txt';
+    link.download = 'memoria_calculos_imovel.csv';
     link.click();
     URL.revokeObjectURL(link.href);
-    addToMemory('Memória de cálculos exportada.', 0);
+    addToMemory('Memória de cálculos exportada em formato CSV.', 0);
 }
 
 // Adiciona listener para exportar memória
