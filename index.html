@@ -4,16 +4,35 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { Button } from "./components/ui/button";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { Switch } from "./components/ui/switch";
+import { Separator } from "./components/ui/separator";
+import { Badge } from "./components/ui/badge";
+import { AlertCircle, CheckCircle2, HelpCircle, TrendingUp, Home, PiggyBank, Calendar, DollarSign, BarChart3 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
 import './App.css';
 
+// Função para formatação de valores monetários
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   }).format(value);
 }
+
+// Função para formatação de percentuais
+function formatPercent(value: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'percent',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value / 100);
+}
+
+// Cores para os gráficos
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
 function App() {
   // Estados para os valores de entrada
@@ -26,9 +45,7 @@ function App() {
   const [reservaMinima, setReservaMinima] = useState<number>(10000);
   const [reservaAtual, setReservaAtual] = useState<number>(6000);
   const [rentabilidadeCarteira, setRentabilidadeCarteira] = useState<number>(14.65);
-  const [rentabilidadeOutra, setRentabilidadeOutra] = useState<number>(0);
   const [reajusteInflacao, setReajusteInflacao] = useState<number>(5.44);
-  const [outroReajuste, setOutroReajuste] = useState<number>(0);
   const [prazoDesejado, setPrazoDesejado] = useState<number>(120);
   const [periodoMaximoAnalisado, setPeriodoMaximoAnalisado] = useState<number>(250);
   const [aportesEsporadicos, setAportesEsporadicos] = useState<Array<{mes: number, valor: number}>>([
@@ -44,6 +61,7 @@ function App() {
   const [tabelaCalculo, setTabelaCalculo] = useState<Array<any>>([]);
   const [metaAlcancada, setMetaAlcancada] = useState<boolean>(false);
   const [mesAlcancado, setMesAlcancado] = useState<number>(0);
+  const [composicaoPatrimonio, setComposicaoPatrimonio] = useState<Array<any>>([]);
   
   // Estado para controlar a aba ativa
   const [activeTab, setActiveTab] = useState<string>("a-vista");
@@ -57,13 +75,22 @@ function App() {
     let metaAtingida = false;
     let mesMeta = 0;
     
+    // Valores para acompanhamento
+    let totalAportesMensais = 0;
+    let totalAportesAnuais = 0;
+    let totalAportesEsporadicos = 0;
+    let totalRendimentos = 0;
+    
     for (let mes = 1; mes <= periodoMaximoAnalisado; mes++) {
       // Aplicar rentabilidade mensal na reserva
       const rentabilidadeMensal = rentabilidadeCarteira / 100 / 12;
-      reserva = reserva * (1 + rentabilidadeMensal);
+      const rendimentoMensal = reserva * rentabilidadeMensal;
+      reserva += rendimentoMensal;
+      totalRendimentos += rendimentoMensal;
       
       // Adicionar aporte mensal
       reserva += quantoPoupaMes;
+      totalAportesMensais += quantoPoupaMes;
       
       // Adicionar FGTS mensal se habilitado
       if (usarFgts) {
@@ -75,11 +102,13 @@ function App() {
       const aporteEsporadico = aportesEsporadicos.find(a => a.mes === mes);
       if (aporteEsporadico) {
         reserva += aporteEsporadico.valor;
+        totalAportesEsporadicos += aporteEsporadico.valor;
       }
       
       // Adicionar aporte anual se for mês múltiplo de 12
       if (mes % 12 === 0) {
         reserva += aportesAnuais;
+        totalAportesAnuais += aportesAnuais;
       }
       
       // Reajustar valor do imóvel pela inflação (mensalmente)
@@ -109,6 +138,16 @@ function App() {
       if (mes === mesAnalisado) {
         setSaldoFgtsFinal(saldoFgts);
         setReservaFinal(reserva);
+        
+        // Calcular composição do patrimônio para o gráfico de pizza
+        setComposicaoPatrimonio([
+          { name: 'Reserva Inicial', value: reservaAtual },
+          { name: 'Aportes Mensais', value: totalAportesMensais },
+          { name: 'Aportes Anuais', value: totalAportesAnuais },
+          { name: 'Aportes Esporádicos', value: totalAportesEsporadicos },
+          { name: 'Rendimentos', value: totalRendimentos },
+          { name: 'FGTS', value: usarFgts ? saldoFgts : 0 }
+        ]);
       }
     }
     
@@ -123,120 +162,166 @@ function App() {
   }, [
     valorImovel, quantoPoupaMes, aportesAnuais, fgtsGuardado, fgtsAnual, 
     usarFgts, reservaMinima, reservaAtual, rentabilidadeCarteira, 
-    rentabilidadeOutra, reajusteInflacao, outroReajuste, prazoDesejado, 
-    periodoMaximoAnalisado, aportesEsporadicos, mesAnalisado
+    reajusteInflacao, prazoDesejado, periodoMaximoAnalisado, 
+    aportesEsporadicos, mesAnalisado
   ]);
 
   // Componente para o formulário de entrada
   const FormularioEntrada = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <Label htmlFor="valorImovel">Valor do Imóvel</Label>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-2">
+        <Label htmlFor="valorImovel" className="text-sm font-medium">
+          <DollarSign className="h-4 w-4 inline-block mr-1" />
+          Valor do Imóvel
+        </Label>
         <Input
           id="valorImovel"
           type="number"
           value={valorImovel}
           onChange={(e) => setValorImovel(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <div>
-        <Label htmlFor="quantoPoupaMes">Quanto Poupa / Mês</Label>
+      <div className="space-y-2">
+        <Label htmlFor="quantoPoupaMes" className="text-sm font-medium">
+          <PiggyBank className="h-4 w-4 inline-block mr-1" />
+          Quanto Poupa / Mês
+        </Label>
         <Input
           id="quantoPoupaMes"
           type="number"
           value={quantoPoupaMes}
           onChange={(e) => setQuantoPoupaMes(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <div>
-        <Label htmlFor="aportesAnuais">Aportes Anuais</Label>
+      <div className="space-y-2">
+        <Label htmlFor="aportesAnuais" className="text-sm font-medium">
+          <Calendar className="h-4 w-4 inline-block mr-1" />
+          Aportes Anuais
+        </Label>
         <Input
           id="aportesAnuais"
           type="number"
           value={aportesAnuais}
           onChange={(e) => setAportesAnuais(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <div>
-        <Label htmlFor="fgtsGuardado">FGTS Guardado</Label>
+      <div className="space-y-2">
+        <Label htmlFor="fgtsGuardado" className="text-sm font-medium">
+          <DollarSign className="h-4 w-4 inline-block mr-1" />
+          FGTS Guardado
+        </Label>
         <Input
           id="fgtsGuardado"
           type="number"
           value={fgtsGuardado}
           onChange={(e) => setFgtsGuardado(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <div>
-        <Label htmlFor="fgtsAnual">FGTS Anual</Label>
+      <div className="space-y-2">
+        <Label htmlFor="fgtsAnual" className="text-sm font-medium">
+          <Calendar className="h-4 w-4 inline-block mr-1" />
+          FGTS Anual
+        </Label>
         <Input
           id="fgtsAnual"
           type="number"
           value={fgtsAnual}
           onChange={(e) => setFgtsAnual(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <div className="flex items-center space-x-2 pt-6">
+      <div className="flex items-center space-x-3 pt-6">
         <Switch
           id="usarFgts"
           checked={usarFgts}
           onCheckedChange={setUsarFgts}
         />
-        <Label htmlFor="usarFgts">Usar FGTS?</Label>
+        <Label htmlFor="usarFgts" className="text-sm font-medium">
+          Usar FGTS?
+        </Label>
       </div>
-      <div>
-        <Label htmlFor="reservaMinima">Reserva Mínima</Label>
+      <div className="space-y-2">
+        <Label htmlFor="reservaMinima" className="text-sm font-medium">
+          <DollarSign className="h-4 w-4 inline-block mr-1" />
+          Reserva Mínima
+        </Label>
         <Input
           id="reservaMinima"
           type="number"
           value={reservaMinima}
           onChange={(e) => setReservaMinima(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <div>
-        <Label htmlFor="reservaAtual">Reserva Atual</Label>
+      <div className="space-y-2">
+        <Label htmlFor="reservaAtual" className="text-sm font-medium">
+          <DollarSign className="h-4 w-4 inline-block mr-1" />
+          Reserva Atual
+        </Label>
         <Input
           id="reservaAtual"
           type="number"
           value={reservaAtual}
           onChange={(e) => setReservaAtual(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <div>
-        <Label htmlFor="rentabilidadeCarteira">Rentabilidade Carteira (%)</Label>
+      <div className="space-y-2">
+        <Label htmlFor="rentabilidadeCarteira" className="text-sm font-medium">
+          <TrendingUp className="h-4 w-4 inline-block mr-1" />
+          Rentabilidade Carteira (%)
+        </Label>
         <Input
           id="rentabilidadeCarteira"
           type="number"
           step="0.01"
           value={rentabilidadeCarteira}
           onChange={(e) => setRentabilidadeCarteira(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <div>
-        <Label htmlFor="reajusteInflacao">Reajuste Inflação (%)</Label>
+      <div className="space-y-2">
+        <Label htmlFor="reajusteInflacao" className="text-sm font-medium">
+          <TrendingUp className="h-4 w-4 inline-block mr-1" />
+          Reajuste Inflação (%)
+        </Label>
         <Input
           id="reajusteInflacao"
           type="number"
           step="0.01"
           value={reajusteInflacao}
           onChange={(e) => setReajusteInflacao(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <div>
-        <Label htmlFor="prazoDesejado">Prazo Desejado (meses)</Label>
+      <div className="space-y-2">
+        <Label htmlFor="prazoDesejado" className="text-sm font-medium">
+          <Calendar className="h-4 w-4 inline-block mr-1" />
+          Prazo Desejado (meses)
+        </Label>
         <Input
           id="prazoDesejado"
           type="number"
           value={prazoDesejado}
           onChange={(e) => setPrazoDesejado(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <div>
-        <Label htmlFor="mesAnalisado">Mês Analisado</Label>
+      <div className="space-y-2">
+        <Label htmlFor="mesAnalisado" className="text-sm font-medium">
+          <Calendar className="h-4 w-4 inline-block mr-1" />
+          Mês Analisado
+        </Label>
         <Input
           id="mesAnalisado"
           type="number"
           value={mesAnalisado}
           onChange={(e) => setMesAnalisado(Number(e.target.value))}
+          className="focus:ring-2 focus:ring-blue-500"
         />
       </div>
     </div>
@@ -244,27 +329,45 @@ function App() {
 
   // Componente para a tabela de memória de cálculo
   const TabelaMemoriaCalculo = () => (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
+    <div className="overflow-x-auto rounded-lg border border-gray-200">
+      <table className="w-full border-collapse bg-white text-sm">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border p-2 text-left">Mês</th>
-            <th className="border p-2 text-left">Reserva</th>
-            <th className="border p-2 text-left">Saldo FGTS</th>
-            <th className="border p-2 text-left">Valor Imóvel</th>
-            <th className="border p-2 text-left">Total Disponível</th>
-            <th className="border p-2 text-left">% Alcançado</th>
+            <th className="border-b border-gray-200 p-3 text-left font-medium text-gray-700">Mês</th>
+            <th className="border-b border-gray-200 p-3 text-left font-medium text-gray-700">Reserva</th>
+            <th className="border-b border-gray-200 p-3 text-left font-medium text-gray-700">Saldo FGTS</th>
+            <th className="border-b border-gray-200 p-3 text-left font-medium text-gray-700">Valor Imóvel</th>
+            <th className="border-b border-gray-200 p-3 text-left font-medium text-gray-700">Total Disponível</th>
+            <th className="border-b border-gray-200 p-3 text-left font-medium text-gray-700">% Alcançado</th>
           </tr>
         </thead>
         <tbody>
           {tabelaCalculo.map((linha, index) => (
-            <tr key={index} className={linha.mes === mesAlcancado ? "bg-green-100" : ""}>
-              <td className="border p-2">{linha.mes}</td>
-              <td className="border p-2">{formatCurrency(linha.reservaInicial)}</td>
-              <td className="border p-2">{formatCurrency(linha.saldoFgtsInicio)}</td>
-              <td className="border p-2">{formatCurrency(linha.valorImovel)}</td>
-              <td className="border p-2">{formatCurrency(linha.totalDisponivel)}</td>
-              <td className="border p-2">{linha.percentualAlcancado}%</td>
+            <tr 
+              key={index} 
+              className={linha.mes === mesAlcancado 
+                ? "bg-green-50 hover:bg-green-100" 
+                : index % 2 === 0 
+                  ? "bg-white hover:bg-gray-50" 
+                  : "bg-gray-50 hover:bg-gray-100"
+              }
+            >
+              <td className="border-b border-gray-200 p-3">{linha.mes}</td>
+              <td className="border-b border-gray-200 p-3">{formatCurrency(linha.reservaInicial)}</td>
+              <td className="border-b border-gray-200 p-3">{formatCurrency(linha.saldoFgtsInicio)}</td>
+              <td className="border-b border-gray-200 p-3">{formatCurrency(linha.valorImovel)}</td>
+              <td className="border-b border-gray-200 p-3 font-medium">{formatCurrency(linha.totalDisponivel)}</td>
+              <td className="border-b border-gray-200 p-3">
+                <div className="flex items-center">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div 
+                      className="bg-blue-600 h-2.5 rounded-full" 
+                      style={{ width: `${Math.min(linha.percentualAlcancado, 100)}%` }}
+                    ></div>
+                  </div>
+                  <span className="ml-2">{linha.percentualAlcancado.toFixed(1)}%</span>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -276,8 +379,14 @@ function App() {
   const Graficos = () => (
     <div className="space-y-8">
       <Card>
-        <CardHeader>
-          <CardTitle>Evolução do Patrimônio vs Valor do Imóvel</CardTitle>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-semibold flex items-center">
+            <TrendingUp className="h-5 w-5 mr-2" />
+            Evolução do Patrimônio vs Valor do Imóvel
+          </CardTitle>
+          <CardDescription>
+            Acompanhe a evolução do seu patrimônio em relação ao valor do imóvel ao longo do tempo
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-80">
@@ -286,106 +395,231 @@ function App() {
                 data={tabelaCalculo}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" label={{ value: 'Mês', position: 'insideBottomRight', offset: -10 }} />
-                <YAxis />
-                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="mes" 
+                  label={{ value: 'Mês', position: 'insideBottomRight', offset: -10 }}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis 
+                  tickFormatter={(value) => new Intl.NumberFormat('pt-BR', {
+                    notation: 'compact',
+                    compactDisplay: 'short',
+                    maximumFractionDigits: 1
+                  }).format(value)}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip 
+                  formatter={(value) => formatCurrency(Number(value))} 
+                  labelFormatter={(label) => `Mês ${label}`}
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    borderRadius: '6px',
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                    border: '1px solid #f0f0f0'
+                  }}
+                />
                 <Legend />
-                <Line type="monotone" dataKey="totalDisponivel" name="Total Disponível" stroke="#8884d8" activeDot={{ r: 8 }} />
-                <Line type="monotone" dataKey="valorImovel" name="Valor do Imóvel" stroke="#82ca9d" />
+                <Line 
+                  type="monotone" 
+                  dataKey="totalDisponivel" 
+                  name="Total Disponível" 
+                  stroke="#0088FE" 
+                  strokeWidth={2}
+                  dot={{ r: 0 }}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="valorImovel" 
+                  name="Valor do Imóvel" 
+                  stroke="#00C49F" 
+                  strokeWidth={2}
+                  dot={{ r: 0 }}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Percentual Alcançado ao Longo do Tempo</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={tabelaCalculo}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip formatter={(value) => `${value}%`} />
-                <Legend />
-                <Bar dataKey="percentualAlcancado" name="% Alcançado" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-semibold flex items-center">
+              <BarChart3 className="h-5 w-5 mr-2" />
+              Percentual Alcançado
+            </CardTitle>
+            <CardDescription>
+              Evolução do percentual alcançado ao longo do tempo
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={tabelaCalculo}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="mes" 
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    tickFormatter={(value) => `${value}%`}
+                    domain={[0, 100]}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip 
+                    formatter={(value) => [`${value.toFixed(1)}%`, 'Percentual']} 
+                    labelFormatter={(label) => `Mês ${label}`}
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      borderRadius: '6px',
+                      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                      border: '1px solid #f0f0f0'
+                    }}
+                  />
+                  <Bar 
+                    dataKey="percentualAlcancado" 
+                    name="% Alcançado" 
+                    fill="#8884d8"
+                    radius={[4, 4, 0, 0]}
+                  >
+                    {tabelaCalculo.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={entry.percentualAlcancado >= 100 ? '#00C49F' : '#8884d8'} 
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-semibold flex items-center">
+              <PiggyBank className="h-5 w-5 mr-2" />
+              Composição do Patrimônio
+            </CardTitle>
+            <CardDescription>
+              Distribuição das fontes de recursos no mês {mesAnalisado}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={composicaoPatrimonio.filter(item => item.value > 0)}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    nameKey="name"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                  >
+                    {composicaoPatrimonio.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value) => formatCurrency(Number(value))}
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      borderRadius: '6px',
+                      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                      border: '1px solid #f0f0f0'
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 
   // Componente para os resultados
   const Resultados = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Resultados no Mês {mesAnalisado}</CardTitle>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Card className="border-l-4 border-l-blue-500">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-semibold flex items-center">
+            <DollarSign className="h-5 w-5 mr-2" />
+            Resultados no Mês {mesAnalisado}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>Reserva mínima:</span>
-              <span>{formatCurrency(reservaMinima)}</span>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-gray-200">
+              <span className="text-gray-600">Reserva mínima:</span>
+              <span className="font-medium">{formatCurrency(reservaMinima)}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Valor imóvel:</span>
-              <span>{formatCurrency(valorImovel)}</span>
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-gray-200">
+              <span className="text-gray-600">Valor imóvel:</span>
+              <span className="font-medium">{formatCurrency(valorImovel)}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Saldo FGTS final:</span>
-              <span>{formatCurrency(saldoFgtsFinal)}</span>
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-gray-200">
+              <span className="text-gray-600">Saldo FGTS final:</span>
+              <span className="font-medium">{formatCurrency(saldoFgtsFinal)}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Reserva final:</span>
-              <span>{formatCurrency(reservaFinal)}</span>
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-gray-200">
+              <span className="text-gray-600">Reserva final:</span>
+              <span className="font-medium">{formatCurrency(reservaFinal)}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Total disponível:</span>
-              <span>{formatCurrency(reservaFinal + (usarFgts ? saldoFgtsFinal : 0))}</span>
+            <div className="flex justify-between items-center py-2 mt-1 bg-gray-50 rounded-md px-2">
+              <span className="text-gray-700 font-medium">Total disponível:</span>
+              <span className="text-lg font-bold text-blue-600">{formatCurrency(reservaFinal + (usarFgts ? saldoFgtsFinal : 0))}</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Meta de Compra</CardTitle>
+      <Card className={`border-l-4 ${metaAlcancada ? 'border-l-green-500' : 'border-l-amber-500'}`}>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-semibold flex items-center">
+            <Home className="h-5 w-5 mr-2" />
+            Meta de Compra
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>Meta alcançada?</span>
-              <span>{metaAlcancada ? "SIM" : "NÃO"}</span>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-gray-200">
+              <span className="text-gray-600">Meta alcançada?</span>
+              <Badge variant={metaAlcancada ? "success" : "secondary"} className={metaAlcancada ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}>
+                {metaAlcancada ? "SIM" : "NÃO"}
+              </Badge>
             </div>
             {metaAlcancada && (
               <>
-                <div className="flex justify-between">
-                  <span>Mês alcançado:</span>
-                  <span>{mesAlcancado}</span>
+                <div className="flex justify-between items-center py-1 border-b border-dashed border-gray-200">
+                  <span className="text-gray-600">Mês alcançado:</span>
+                  <span className="font-medium">{mesAlcancado}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Anos:</span>
-                  <span>{Math.floor(mesAlcancado / 12)}</span>
+                <div className="flex justify-between items-center py-1 border-b border-dashed border-gray-200">
+                  <span className="text-gray-600">Anos:</span>
+                  <span className="font-medium">{Math.floor(mesAlcancado / 12)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Meses:</span>
-                  <span>{mesAlcancado % 12}</span>
+                <div className="flex justify-between items-center py-1 border-b border-dashed border-gray-200">
+                  <span className="text-gray-600">Meses:</span>
+                  <span className="font-medium">{mesAlcancado % 12}</span>
                 </div>
               </>
             )}
-            <div className="flex justify-between">
-              <span>Dentro do prazo?</span>
-              <span>{metaAlcancada && mesAlcancado <= prazoDesejado ? "SIM" : "NÃO"}</span>
+            <div className="flex justify-between items-center py-2 mt-1 bg-gray-50 rounded-md px-2">
+              <span className="text-gray-700 font-medium">Dentro do prazo?</span>
+              <Badge variant={metaAlcancada && mesAlcancado <= prazoDesejado ? "success" : "destructive"} className={metaAlcancada && mesAlcancado <= prazoDesejado ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}>
+                {metaAlcancada && mesAlcancado <= prazoDesejado ? "SIM" : "NÃO"}
+              </Badge>
             </div>
           </div>
         </CardContent>
@@ -393,126 +627,216 @@ function App() {
     </div>
   );
 
+  // Componente para aportes esporádicos
+  const AportesEsporadicos = () => (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-semibold flex items-center">
+          <DollarSign className="h-5 w-5 mr-2" />
+          Aportes Esporádicos
+        </CardTitle>
+        <CardDescription>
+          Adicione aportes extras em meses específicos
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {aportesEsporadicos.map((aporte, index) => (
+            <div key={index} className="grid grid-cols-2 gap-4 p-3 rounded-md bg-gray-50">
+              <div className="space-y-2">
+                <Label htmlFor={`mes-${index}`} className="text-sm font-medium">
+                  <Calendar className="h-4 w-4 inline-block mr-1" />
+                  Mês
+                </Label>
+                <Input
+                  id={`mes-${index}`}
+                  type="number"
+                  value={aporte.mes}
+                  onChange={(e) => {
+                    const novosAportes = [...aportesEsporadicos];
+                    novosAportes[index].mes = Number(e.target.value);
+                    setAportesEsporadicos(novosAportes);
+                  }}
+                  className="focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`valor-${index}`} className="text-sm font-medium">
+                  <DollarSign className="h-4 w-4 inline-block mr-1" />
+                  Valor
+                </Label>
+                <Input
+                  id={`valor-${index}`}
+                  type="number"
+                  value={aporte.valor}
+                  onChange={(e) => {
+                    const novosAportes = [...aportesEsporadicos];
+                    novosAportes[index].valor = Number(e.target.value);
+                    setAportesEsporadicos(novosAportes);
+                  }}
+                  className="focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          ))}
+          <div className="flex space-x-2 pt-2">
+            <Button 
+              onClick={() => setAportesEsporadicos([...aportesEsporadicos, { mes: 0, valor: 0 }])}
+              variant="outline"
+              className="flex items-center"
+            >
+              <span className="mr-1">+</span> Adicionar Aporte
+            </Button>
+            <Button 
+              onClick={() => {
+                if (aportesEsporadicos.length > 0) {
+                  setAportesEsporadicos(aportesEsporadicos.slice(0, -1));
+                }
+              }}
+              variant="outline"
+              className="flex items-center"
+              disabled={aportesEsporadicos.length === 0}
+            >
+              <span className="mr-1">-</span> Remover Último
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   // Componente para a aba de financiamento
   const Financiamento = () => (
     <div className="space-y-6">
+      <Alert>
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Funcionalidade em desenvolvimento</AlertTitle>
+        <AlertDescription>
+          Esta funcionalidade está sendo implementada. Por favor, utilize a aba "À Vista" para simular a compra do imóvel.
+        </AlertDescription>
+      </Alert>
+      
       <Card>
         <CardHeader>
           <CardTitle>Simulação de Financiamento</CardTitle>
           <CardDescription>
-            Esta funcionalidade está em desenvolvimento. Por favor, utilize a aba "À Vista" para simular a compra do imóvel.
+            Em breve, você poderá simular diferentes cenários de financiamento imobiliário aqui.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p>Em breve, você poderá simular diferentes cenários de financiamento imobiliário aqui.</p>
+          <div className="p-6 text-center">
+            <HelpCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium mb-2">Funcionalidade em construção</h3>
+            <p className="text-gray-500">
+              Estamos trabalhando para disponibilizar simulações de financiamento com diferentes taxas, prazos e condições.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">Calculadora de Imóvel</h1>
-      
-      <Tabs defaultValue="a-vista" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="a-vista">À Vista</TabsTrigger>
-          <TabsTrigger value="financiamento">Financiamento</TabsTrigger>
-        </TabsList>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto py-8 px-4">
+        <header className="mb-8 text-center">
+          <h1 className="text-3xl font-bold mb-2 text-gray-800">Calculadora de Imóvel</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Simule a compra de um imóvel à vista ou financiado, com análise detalhada da evolução patrimonial e prazos
+          </p>
+        </header>
         
-        <TabsContent value="a-vista" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Parâmetros</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <FormularioEntrada />
-            </CardContent>
-          </Card>
+        <Tabs defaultValue="a-vista" value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="a-vista" className="text-sm sm:text-base">
+              <Home className="h-4 w-4 mr-2 hidden sm:inline-block" />
+              À Vista
+            </TabsTrigger>
+            <TabsTrigger value="financiamento" className="text-sm sm:text-base">
+              <DollarSign className="h-4 w-4 mr-2 hidden sm:inline-block" />
+              Financiamento
+            </TabsTrigger>
+          </TabsList>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Aportes Esporádicos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {aportesEsporadicos.map((aporte, index) => (
-                  <div key={index} className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor={`mes-${index}`}>Mês</Label>
-                      <Input
-                        id={`mes-${index}`}
-                        type="number"
-                        value={aporte.mes}
-                        onChange={(e) => {
-                          const novosAportes = [...aportesEsporadicos];
-                          novosAportes[index].mes = Number(e.target.value);
-                          setAportesEsporadicos(novosAportes);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor={`valor-${index}`}>Valor</Label>
-                      <Input
-                        id={`valor-${index}`}
-                        type="number"
-                        value={aporte.valor}
-                        onChange={(e) => {
-                          const novosAportes = [...aportesEsporadicos];
-                          novosAportes[index].valor = Number(e.target.value);
-                          setAportesEsporadicos(novosAportes);
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-                <div className="flex space-x-2">
-                  <Button 
-                    onClick={() => setAportesEsporadicos([...aportesEsporadicos, { mes: 0, valor: 0 }])}
-                    variant="outline"
-                  >
-                    Adicionar Aporte
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      if (aportesEsporadicos.length > 0) {
-                        setAportesEsporadicos(aportesEsporadicos.slice(0, -1));
-                      }
-                    }}
-                    variant="outline"
-                  >
-                    Remover Último
-                  </Button>
-                </div>
+          <TabsContent value="a-vista" className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-semibold flex items-center">
+                      <DollarSign className="h-5 w-5 mr-2" />
+                      Parâmetros
+                    </CardTitle>
+                    <CardDescription>
+                      Configure os valores para simulação de compra à vista
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <FormularioEntrada />
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
+              
+              <div className="lg:col-span-1">
+                <AportesEsporadicos />
+              </div>
+            </div>
+            
+            <Resultados />
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-semibold flex items-center">
+                  <BarChart3 className="h-5 w-5 mr-2" />
+                  Gráficos
+                </CardTitle>
+                <CardDescription>
+                  Visualize a evolução do seu patrimônio e a meta de compra
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Graficos />
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-semibold flex items-center">
+                  <HelpCircle className="h-5 w-5 mr-2" />
+                  Memória de Cálculo
+                </CardTitle>
+                <CardDescription>
+                  Acompanhe a evolução detalhada mês a mês
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TabelaMemoriaCalculo />
+              </CardContent>
+            </Card>
+            
+            {metaAlcancada && (
+              <Alert variant="success" className="bg-green-50 border-green-200">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <AlertTitle className="text-green-800">Meta alcançada!</AlertTitle>
+                <AlertDescription className="text-green-700">
+                  Você conseguirá comprar o imóvel no mês {mesAlcancado} ({Math.floor(mesAlcancado / 12)} anos e {mesAlcancado % 12} meses).
+                  {mesAlcancado <= prazoDesejado 
+                    ? " Isso está dentro do prazo desejado de " + prazoDesejado + " meses."
+                    : " Isso está fora do prazo desejado de " + prazoDesejado + " meses."}
+                </AlertDescription>
+              </Alert>
+            )}
+          </TabsContent>
           
-          <Resultados />
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Gráficos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Graficos />
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Memória de Cálculo</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <TabelaMemoriaCalculo />
-            </CardContent>
-          </Card>
-        </TabsContent>
+          <TabsContent value="financiamento" className="space-y-6">
+            <Financiamento />
+          </TabsContent>
+        </Tabs>
         
-        <TabsContent value="financiamento" className="space-y-6">
-          <Financiamento />
-        </TabsContent>
-      </Tabs>
+        <footer className="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500 text-sm">
+          <p>Calculadora de Imóvel © {new Date().getFullYear()}</p>
+        </footer>
+      </div>
     </div>
   );
 }
