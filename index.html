@@ -828,15 +828,15 @@ ${resultBoxText}`;
       }
       
       recommendationText.innerHTML = analysis;
-      recommendationDiv.style.display = \'block\';
+      recommendationDiv.style.display = 'block';
 
       // Mostrar o botão do WhatsApp
-      whatsappButton.style.display = \'block\';
+      whatsappButton.style.display = 'block';
     }
 
     function calculateSavings() {
       // Armazenar o texto do objetivo para uso posterior
-      goalDescriptionText = document.getElementById(\'goalDescription\').value;
+      goalDescriptionText = document.getElementById('goalDescription').value;
       
       // Resetar os gráficos antes de desenhar novos
       const chartUnico = Chart.getChart("chartUnico");
@@ -848,23 +848,22 @@ ${resultBoxText}`;
       const chartRentabilidade = Chart.getChart("chartRentabilidade");
       if (chartRentabilidade) chartRentabilidade.destroy();
       
-      const goalDescription = document.getElementById(\'goalDescription\').value;
-      const goal = parseCurrency(document.getElementById(\'goal\').value);
-      const rate = parsePercentage(document.getElementById(\'rate\').value);
-      const rateType = document.getElementById(\'rateType\').value;
-      const knowsTax = document.getElementById(\'knowsTax\').value;
-      const tax = knowsTax === \'yes\' ? parsePercentage(document.getElementById(\'tax\').value) : 0.15;
-      const knowsInflation = document.getElementById(\'knowsInflation\').value;
-      const inflation = knowsInflation === \'yes\' ? parsePercentage(document.getElementById(\'inflation\').value) : 0.05;
-      const period = parseInt(document.getElementById(\'period\').value);
-      const currentSavings = parseCurrency(document.getElementById(\'currentSavings\').value);
-      const currentContribution = parseCurrency(document.getElementById(\'currentContribution\').value);
+      const goalDescription = document.getElementById("goalDescription").value;
+      const goal = parseCurrency(document.getElementById("goal").value);
+      const rate = parsePercentage(document.getElementById("rate").value);
+      const rateType = document.getElementById("rateType").value;
+      const knowsTax = document.getElementById("knowsTax").value;
+      const tax = knowsTax === 'yes' ? parsePercentage(document.getElementById("tax").value) : 0.15;
+      const knowsInflation = document.getElementById("knowsInflation").value;
+      const inflation = knowsInflation === 'yes' ? parsePercentage(document.getElementById("inflation").value) : 0.05;
+      const period = parseInt(document.getElementById("period").value);
+      const currentSavings = parseCurrency(document.getElementById("currentSavings").value);
+      const currentContribution = parseCurrency(document.getElementById("currentContribution").value);
 
-      const monthlyRate = rateType === \'annual\' ? Math.pow(1 + rate, 1 / 12) - 1 : rate;
+      const monthlyRate = rateType === 'annual' ? Math.pow(1 + rate, 1 / 12) - 1 : rate;
       const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
-
-      const resultDiv = document.getElementById(\'result\');
-      resultDiv.innerHTML = `<p><strong>Reajuste pela Inflação:</strong><br>Valor atual do objetivo: R$ ${formatMoney(goal)}<br>Valor corrigido pela inflação (${(inflation * 100).toFixed(2).replace(\'.\', \',\')}%) em ${period} meses: R$ ${formatMoney(inflatedGoal)}</p>`;
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = `<p><strong>Reajuste pela Inflação:</strong><br>Valor atual do objetivo: R$ ${formatMoney(goal)}<br>Valor corrigido pela inflação (${(inflation * 100).toFixed(2).replace('.', ',')}%) em ${period} meses: R$ ${formatMoney(inflatedGoal)}</p>`;
 
       // Cálculo do investimento único necessário
       const taxFactor = (1 + monthlyRate) ** period - tax * ((1 + monthlyRate) ** period - 1);
@@ -879,10 +878,9 @@ ${resultBoxText}`;
       const investidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.totalInvestido);
       const objetivoCorrigidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.objetivoCorrigido);
       resultDiv.innerHTML += `<p><strong>Investimento Único Necessário:</strong><br>Para atingir seu objetivo no prazo desejado, sem poupar mensalmente, você precisaria investir <strong>R$ ${formatMoney(investmentNeeded)}</strong> hoje.<br>${comparisonText}</p>`;
-      document.getElementById(\'chartUnicoContainer\').style.display = \'block\';
-      fillDataTable(\'tableUnico\', resultUnico.valoresMensais, goal, inflation);
-      drawChart(document.getElementById(\'chartUnico\').getContext(\'2d\'), brutoUnico, liquidoUnico, investidoUnico, objetivoCorrigidoUnico, \'#6f42c1\', \'#9f75e5\', \'#4b2882\', \'#333333\');
-
+      document.getElementById("chartUnicoContainer").style.display = "block";
+      fillDataTable("tableUnico", resultUnico.valoresMensais, goal, inflation);
+      drawChart(document.getElementById("chartUnico").getContext("2d"), brutoUnico, liquidoUnico, investidoUnico, objetivoCorrigidoUnico, "#6f42c1", "#9f75e5", "#4b2882", "#333333");
       // Cálculo do plano ideal (quanto poupar mensalmente)
       let low = 0, high = inflatedGoal, Y = 0;
       let resultIdeal;
@@ -900,11 +898,9 @@ ${resultBoxText}`;
       const investidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.totalInvestido);
       const objetivoCorrigidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.objetivoCorrigido);
       resultDiv.innerHTML += `<p><strong>Plano Ideal:</strong><br>Você precisará poupar R$ ${formatMoney(Y)} por mês para atingir seu objetivo corrigido.</p>`;
-      document.getElementById(\'chartIdealContainer\').style.display = \'block\';
-      fillDataTable(\'tableIdeal\', resultIdeal.valoresMensais, goal, inflation);
-      drawChart(document.getElementById(\'chartIdeal\').getContext(\'2d\'), brutoIdeal, liquidoIdeal, investidoIdeal, objetivoCorrigidoIdeal, \'#28a745\', \'#218838\', \'#046c4e\', \'#333333\');
-
-      // Cálculo com a poupança atual
+      document.getElementById("chartIdealContainer").style.display = "block";
+      fillDataTable("tableIdeal", resultIdeal.valoresMensais, goal, inflation);
+      drawChart(document.getElementById("chartIdeal").getContext("2d"), brutoIdeal, liquidoIdeal, investidoIdeal, objetivoCorrigidoIdeal, "#28a745", "#218838", "#046c4e", "#333333"); // Cálculo com a poupança atual
       const resultAtual = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, 1200, tax, goal, inflation);
       const valoresMensais = resultAtual.valoresMensais;
       let months = 0;
@@ -925,29 +921,26 @@ ${resultBoxText}`;
       const investidoAtual = valoresMensais.slice(1, maxMonths).map(m => m.totalInvestido);
       const objetivoCorrigidoAtual = valoresMensais.slice(1, maxMonths).map(m => m.objetivoCorrigido);
       resultDiv.innerHTML += `<p><strong>Com a Poupança Atual:</strong><br>Você atingirá o objetivo em aproximadamente ${months} meses, considerando a inflação progressiva a cada 12 meses.</p>`;
-      document.getElementById(\'chartAtualContainer\').style.display = \'block\';
-      fillDataTable(\'tableAtual\', valoresMensais.slice(0, maxMonths), goal, inflation);
-      drawChart(document.getElementById(\'chartAtual\').getContext(\'2d\'), brutoAtual, liquidoAtual, investidoAtual, objetivoCorrigidoAtual, \'#d4af37\', \'#b38e2e\', \'#f5e2a9\', \'#333333\');
-
-      // Calcular a rentabilidade anual necessária
+      document.getElementById("chartAtualContainer").style.display = "block";
+      fillDataTable("tableAtual", valoresMensais.slice(0, maxMonths), goal, inflation);
+      drawChart(document.getElementById("chartAtual").getContext("2d"), brutoAtual, liquidoAtual, investidoAtual, objetivoCorrigidoAtual, "#d4af37", "#b38e2e", "#f5e2a9", "#333333");  // Calcular a rentabilidade anual necessária
       const requiredRate = calculateRequiredRate(goal, currentSavings, currentContribution, period, tax, inflation);
       const brutoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalAcumulado);
       const liquidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.valorLiquido);
       const investidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalInvestido);
       const objetivoCorrigidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.objetivoCorrigido);
-      resultDiv.innerHTML += `<p><strong>Rentabilidade Necessária:</strong><br>Para atingir seu objetivo em ${period} meses, mantendo o aporte mensal de R$ ${formatMoney(currentContribution)}, você precisaria de uma rentabilidade anual de <strong>${(requiredRate.annualRate * 100).toFixed(2).replace(\'.\', \',\')}%</strong>.</p>`;
+      resultDiv.innerHTML += `<p><strong>Rentabilidade Necessária:</strong><br>Para atingir seu objetivo em ${period} meses, mantendo o aporte mensal de R$ ${formatMoney(currentContribution)}, você precisaria de uma rentabilidade anual de <strong>${(requiredRate.annualRate * 100).toFixed(2).replace('.', ',')}%</strong>.</p>`;
       resultText = resultDiv.innerText;
-      document.getElementById(\'chartRentabilidadeContainer\').style.display = \'block\';
-      fillDataTable(\'tableRentabilidade\', requiredRate.valoresMensais, goal, inflation);
-      drawChart(document.getElementById(\'chartRentabilidade\').getContext(\'2d\'), brutoRentabilidade, liquidoRentabilidade, investidoRentabilidade, objetivoCorrigidoRentabilidade, \'#6f42c1\', \'#9f75e5\', \'#4b2882\', \'#333333\');
-      
+      document.getElementById("chartRentabilidadeContainer").style.display = "block";
+      fillDataTable("tableRentabilidade", requiredRate.valoresMensais, goal, inflation);
+      drawChart(document.getElementById("chartRentabilidade").getContext("2d"), brutoRentabilidade, liquidoRentabilidade, investidoRentabilidade, objetivoCorrigidoRentabilidade, "#6f42c1", "#9f75e5", "#4b2882", "#333333");
       // Gerar análise automatizada
-      generateRecommendation(goalDescription, goal, currentSavings, currentContribution, Y, months, requiredRate.annualRate, rateType === \'annual\' ? rate : Math.pow(1 + rate, 12) - 1);
+      generateRecommendation(goalDescription, goal, currentSavings, currentContribution, Y, months, requiredRate.annualRate, rateType === 'annual' ? rate : Math.pow(1 + rate, 12) - 1);
     }
 
     window.onload = () => {
-      toggleTaxInput(\'tax\', \'15,00 %\');
-      toggleTaxInput(\'inflation\', \'5,00 %\');
+      toggleTaxInput("tax", "15,00 %");
+      toggleTaxInput("inflation", "5,00 %");
     };
   </script>
 </body>
