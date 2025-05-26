@@ -827,7 +827,8 @@ ${resultBoxText}`;
         analysis += `<p>A rentabilidade informada de ${(rate * 100).toFixed(2).replace('.', ',')}% ao ano é suficiente para atingir o objetivo no prazo desejado, desde que sejam mantidos os aportes mensais adequados.</p>`;
       }
       
-      recommendationText.innerHTML = analysis      recommendationDiv.style.display = \'block\';
+      recommendationText.innerHTML = analysis;
+      recommendationDiv.style.display = \'block\';
 
       // Mostrar o botão do WhatsApp
       whatsappButton.style.display = \'block\';
