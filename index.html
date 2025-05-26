@@ -1,947 +1,1171 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Novos Objetivos</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    :root {
-      --verde-esmeralda: #046c4e;
-      --verde-claro: #28a745;
-      --verde-medio: #218838;
-      --dourado: #d4af37;
-      --dourado-claro: #f5e2a9;
-      --dourado-escuro: #b38e2e;
-      --roxo: #6f42c1;
-      --roxo-claro: #9f75e5;
-      --roxo-escuro: #4b2882;
-      --fundo-claro: #f9f9f9;
-      --vermelho-translucido: rgba(255, 0, 0, 0.1);
-      --azul-translucido: rgba(0, 0, 255, 0.1);
-      --roxo-translucido: rgba(111, 66, 193, 0.1);
-    }
-    body {
-      font-family: Arial, sans-serif;
-      background-color: var(--fundo-claro);
-      color: var(--verde-esmeralda);
-      margin: 20px auto;
-      padding: 20px;
-      max-width: 1200px;
-    }
-    h1 {
-      color: var(--dourado);
-      text-align: center;
-    }
-    .result {
-      margin-top: 20px;
-      padding: 15px;
-      border: 2px solid var(--dourado);
-      background-color: white;
-      border-radius: 8px;
-    }
-    .recommendation {
-      margin: 30px 0;
-      padding: 20px;
-      border: 2px solid var(--verde-esmeralda);
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .recommendation h3 {
-      color: var(--verde-esmeralda);
-      margin-top: 0;
-      border-bottom: 1px solid var(--dourado-claro);
-      padding-bottom: 10px;
-    }
-    .whatsapp-button {
-      display: block;
-      width: 100%;
-      padding: 20px;
-      margin: 20px 0;
-      background-color: #25D366; /* WhatsApp green */
-      color: white;
-      text-align: center;
-      font-weight: bold;
-      font-size: 18px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: background-color 0.3s ease;
-    }
-    .whatsapp-button:hover {
-      background-color: #128C7E; /* Darker WhatsApp green */
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-    .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .row > div {
-      flex: 1;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      box-sizing: border-box;
-      border: 1px solid var(--verde-esmeralda);
-      border-radius: 5px;
-    }
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    button {
-      margin-top: 15px;
-      padding: 12px;
-      background-color: var(--verde-esmeralda);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-      font-weight: bold;
-      font-size: 16px;
-    }
-    button:hover {
-      background-color: #03563f;
-    }
-    .chart-container {
-      margin-top: 30px;
-      position: relative;
-      border: 1px solid var(--dourado-claro);
-      border-radius: 8px;
-      padding: 15px;
-      background-color: white;
-    }
-    .chart-title {
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 15px;
-      color: var(--verde-esmeralda);
-    }
-    .chart-nav {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    .chart-nav button {
-      padding: 8px 15px;
-      margin-top: 0;
-      width: auto;
-      font-size: 14px;
-    }
-    .chart-content {
-      display: flex;
-      overflow: hidden;
-      position: relative;
-      height: 400px;
-    }
-    .chart-slide {
-      flex: 0 0 100%;
-      transition: transform 0.3s ease;
-    }
-    .table-slide {
-      flex: 0 0 100%;
-      overflow-y: auto;
-      padding: 10px;
-    }
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    .data-table th, .data-table td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: right;
-    }
-    .data-table th {
-      background-color: var(--fundo-claro);
-      color: var(--verde-esmeralda);
-      text-align: center;
-      position: sticky;
-      top: 0;
-    }
-    .data-table tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    .data-table tr:hover {
-      background-color: #f1f1f1;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Definitiva: Comprar vs Alugar Imóvel</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- jsPDF-AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+    <!-- FileSaver.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Calculadora de Objetivos</h1>
-  <form id="savingsForm">
-    <label for="goalDescription">Qual é o seu objetivo financeiro e por que ele é importante para você?</label>
-    <textarea id="goalDescription" placeholder="Ex: Comprar um imóvel para ter segurança e estabilidade para minha família, ou fazer uma viagem internacional para conhecer novas culturas..."></textarea>
+    <!-- Barra de Navegação Superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-home me-2"></i>Análise Imobiliária
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="nav-home">
+                            <i class="fas fa-house-user me-1"></i>Início
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="nav-new-simulation">
+                            <i class="fas fa-calculator me-1"></i>Nova Simulação
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="nav-scenarios">
+                            <i class="fas fa-layer-group me-1"></i>Meus Cenários
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="nav-studies">
+                            <i class="fas fa-chart-line me-1"></i>Meus Estudos
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <button class="btn btn-outline-light" id="btn-help">
+                        <i class="fas fa-question-circle me-1"></i>Ajuda
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-    <div class="row">
-      <div>
-        <label for="goal">Valor do Objetivo (R$):</label>
-        <input type="text" id="goal" required oninput="formatCurrency(this)">
-      </div>
-      <div>
-        <label for="currentContribution">Quanto você poupa atualmente por mês (R$):</label>
-        <input type="text" id="currentContribution" required oninput="formatCurrency(this)">
-      </div>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Painel Lateral -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" id="sidebarMenu">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Acesso Rápido</span>
+                    </h6>
+                    <div class="accordion" id="sidebarAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingRecent">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRecent">
+                                    Simulações Recentes
+                                </button>
+                            </h2>
+                            <div id="collapseRecent" class="accordion-collapse collapse" data-bs-parent="#sidebarAccordion">
+                                <div class="accordion-body p-0">
+                                    <div class="list-group list-group-flush" id="recent-simulations">
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">Simulação Exemplo</h6>
+                                                <small class="text-muted">Hoje</small>
+                                            </div>
+                                            <p class="mb-1">Financiamento - Apartamento Centro</p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingScenarios">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseScenarios">
+                                    Cenários Salvos
+                                </button>
+                            </h2>
+                            <div id="collapseScenarios" class="accordion-collapse collapse" data-bs-parent="#sidebarAccordion">
+                                <div class="accordion-body p-0">
+                                    <div class="list-group list-group-flush" id="saved-scenarios">
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">Cenário Exemplo</h6>
+                                                <small class="text-muted">Ontem</small>
+                                            </div>
+                                            <p class="mb-1">Comparação de Financiamentos</p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingStudies">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStudies">
+                                    Estudos Salvos
+                                </button>
+                            </h2>
+                            <div id="collapseStudies" class="accordion-collapse collapse" data-bs-parent="#sidebarAccordion">
+                                <div class="accordion-body p-0">
+                                    <div class="list-group list-group-flush" id="saved-studies">
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">Estudo Exemplo</h6>
+                                                <small class="text-muted">Semana passada</small>
+                                            </div>
+                                            <p class="mb-1">Comprar vs Alugar - Zona Sul</p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área Principal -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Conteúdo dinâmico baseado na navegação -->
+                <div id="content-container">
+                    <!-- Página Inicial (visível por padrão) -->
+                    <div id="home-content" class="content-section active">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Análise Definitiva: Comprar vs Alugar Imóvel</h1>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Bem-vindo à sua ferramenta de análise imobiliária</h5>
+                                        <p class="card-text">
+                                            Esta aplicação foi desenvolvida para auxiliar na tomada de decisão sobre a melhor forma de adquirir ou alugar um imóvel, 
+                                            considerando diversos fatores econômicos e pessoais. Você pode criar simulações detalhadas, 
+                                            compará-las em cenários e realizar estudos completos para encontrar a opção mais vantajosa para o seu caso.
+                                        </p>
+                                        <p class="card-text">
+                                            Utilize as diferentes modalidades disponíveis para analisar todas as possibilidades:
+                                            compra à vista, financiamento imobiliário, consórcio, aluguel ou outros tipos de empréstimos.
+                                            A ferramenta também permite simular amortizações de dívidas existentes.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Iniciar Nova Simulação</h5>
+                                        <p class="card-text">Escolha uma modalidade para começar:</p>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary" data-simulation-type="cash">
+                                                <i class="fas fa-money-bill-wave me-1"></i>Compra à Vista
+                                            </button>
+                                            <button class="btn btn-primary" data-simulation-type="financing">
+                                                <i class="fas fa-landmark me-1"></i>Financiamento
+                                            </button>
+                                            <button class="btn btn-primary" data-simulation-type="consortium">
+                                                <i class="fas fa-users me-1"></i>Consórcio
+                                            </button>
+                                            <button class="btn btn-primary" data-simulation-type="rent">
+                                                <i class="fas fa-key me-1"></i>Aluguel
+                                            </button>
+                                            <button class="btn btn-primary" data-simulation-type="loan">
+                                                <i class="fas fa-hand-holding-usd me-1"></i>Outros Empréstimos
+                                            </button>
+                                            <button class="btn btn-primary" data-simulation-type="amortization">
+                                                <i class="fas fa-percentage me-1"></i>Amortização
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Dicas Úteis
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            Para uma análise mais precisa, considere fatores como inflação projetada, 
+                                            valorização imobiliária e rentabilidade de investimentos alternativos. 
+                                            Estes elementos são fundamentais para comparar adequadamente diferentes modalidades ao longo do tempo.
+                                        </p>
+                                        <p class="card-text">
+                                            Lembre-se que o comprometimento máximo recomendado da renda familiar com financiamento 
+                                            imobiliário é de 30%, conforme a legislação vigente.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Simulações Recentes
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text" id="no-simulations">
+                                            Você ainda não possui simulações salvas. Crie sua primeira simulação 
+                                            para começar a construir seu histórico de análises.
+                                        </p>
+                                        <div id="recent-simulations-home" class="d-none">
+                                            <!-- Preenchido via JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Nova Simulação -->
+                    <div id="new-simulation-content" class="content-section">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Nova Simulação</h1>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <ul class="nav nav-tabs card-header-tabs" id="simulation-tabs">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" id="cash-tab" data-bs-toggle="tab" href="#cash-form">Compra à Vista</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="financing-tab" data-bs-toggle="tab" href="#financing-form">Financiamento</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="consortium-tab" data-bs-toggle="tab" href="#consortium-form">Consórcio</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="rent-tab" data-bs-toggle="tab" href="#rent-form">Aluguel</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="loan-tab" data-bs-toggle="tab" href="#loan-form">Outros Empréstimos</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="amortization-tab" data-bs-toggle="tab" href="#amortization-form">Amortização</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="tab-content" id="simulation-tab-content">
+                                            <!-- Formulário: Compra à Vista -->
+                                            <div class="tab-pane fade show active" id="cash-form">
+                                                <h5 class="card-title">Simulação de Compra à Vista</h5>
+                                                <form id="cash-simulation-form">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label for="cash-property-value" class="form-label">Valor do Imóvel (R$) *</label>
+                                                            <input type="number" class="form-control" id="cash-property-value" required min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="cash-acquisition-costs" class="form-label">Custos de Aquisição (R$) *</label>
+                                                            <input type="number" class="form-control" id="cash-acquisition-costs" required min="0" step="0.01">
+                                                            <div class="form-text">ITBI, escritura, registro, etc.</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label for="cash-maintenance-costs" class="form-label">Custos de Manutenção Anual (R$) *</label>
+                                                            <input type="number" class="form-control" id="cash-maintenance-costs" required min="0" step="0.01">
+                                                            <div class="form-text">IPTU, condomínio, reformas, etc.</div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="cash-alternative-return" class="form-label">Rentabilidade Alternativa (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="cash-alternative-return" min="0" max="100" step="0.01">
+                                                            <div class="form-text">Rendimento de investimentos alternativos</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="cash-inflation" class="form-label">Inflação Projetada (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="cash-inflation" min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="cash-property-appreciation" class="form-label">Valorização Imobiliária (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="cash-property-appreciation" min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="cash-time-horizon" class="form-label">Horizonte de Tempo (anos)</label>
+                                                            <input type="number" class="form-control" id="cash-time-horizon" min="1" max="50" step="1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <label for="cash-simulation-name" class="form-label">Nome da Simulação *</label>
+                                                            <input type="text" class="form-control" id="cash-simulation-name" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                        <button type="button" class="btn btn-secondary me-md-2" id="cash-reset-btn">Limpar</button>
+                                                        <button type="submit" class="btn btn-primary">Calcular</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            
+                                            <!-- Formulário: Financiamento -->
+                                            <div class="tab-pane fade" id="financing-form">
+                                                <h5 class="card-title">Simulação de Financiamento Imobiliário</h5>
+                                                <form id="financing-simulation-form">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="financing-property-value" class="form-label">Valor do Imóvel (R$) *</label>
+                                                            <input type="number" class="form-control" id="financing-property-value" required min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="financing-down-payment" class="form-label">Valor da Entrada (R$) *</label>
+                                                            <input type="number" class="form-control" id="financing-down-payment" required min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="financing-term" class="form-label">Prazo (anos) *</label>
+                                                            <input type="number" class="form-control" id="financing-term" required min="1" max="35" step="1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="financing-interest-rate" class="form-label">Taxa de Juros (% a.a.) *</label>
+                                                            <input type="number" class="form-control" id="financing-interest-rate" required min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="financing-amortization-system" class="form-label">Sistema de Amortização *</label>
+                                                            <select class="form-select" id="financing-amortization-system" required>
+                                                                <option value="price">Price (parcelas fixas)</option>
+                                                                <option value="sac">SAC (amortização constante)</option>
+                                                                <option value="sacre">SACRE (amortização crescente)</option>
+                                                                <option value="mejs">MEJS (juros simples)</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="financing-monthly-income" class="form-label">Renda Familiar Mensal (R$) *</label>
+                                                            <input type="number" class="form-control" id="financing-monthly-income" required min="0" step="0.01">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="financing-contract-costs" class="form-label">Custos de Contratação (R$)</label>
+                                                            <input type="number" class="form-control" id="financing-contract-costs" min="0" step="0.01">
+                                                            <div class="form-text">Avaliação, seguros, taxas, etc.</div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="financing-itbi-costs" class="form-label">ITBI e Custos Cartoriais (R$)</label>
+                                                            <input type="number" class="form-control" id="financing-itbi-costs" min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="financing-fgts-use" class="form-label">Uso do FGTS</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-text">
+                                                                    <input class="form-check-input mt-0" type="checkbox" id="financing-fgts-checkbox">
+                                                                </div>
+                                                                <input type="number" class="form-control" id="financing-fgts-value" min="0" step="0.01" placeholder="Valor disponível (R$)" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="financing-correction-index" class="form-label">Indexador de Correção</label>
+                                                            <select class="form-select" id="financing-correction-index">
+                                                                <option value="tr">TR</option>
+                                                                <option value="ipca">IPCA</option>
+                                                                <option value="none">Sem correção</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="financing-inflation" class="form-label">Inflação Projetada (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="financing-inflation" min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="financing-property-appreciation" class="form-label">Valorização Imobiliária (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="financing-property-appreciation" min="0" max="100" step="0.01">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <label for="financing-simulation-name" class="form-label">Nome da Simulação *</label>
+                                                            <input type="text" class="form-control" id="financing-simulation-name" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                        <button type="button" class="btn btn-secondary me-md-2" id="financing-reset-btn">Limpar</button>
+                                                        <button type="submit" class="btn btn-primary">Calcular</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            
+                                            <!-- Formulário: Consórcio -->
+                                            <div class="tab-pane fade" id="consortium-form">
+                                                <h5 class="card-title">Simulação de Consórcio Imobiliário</h5>
+                                                <form id="consortium-simulation-form">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label for="consortium-credit-value" class="form-label">Valor da Carta de Crédito (R$) *</label>
+                                                            <input type="number" class="form-control" id="consortium-credit-value" required min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="consortium-term" class="form-label">Prazo (meses) *</label>
+                                                            <input type="number" class="form-control" id="consortium-term" required min="1" max="240" step="1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label for="consortium-admin-fee" class="form-label">Taxa de Administração (%) *</label>
+                                                            <input type="number" class="form-control" id="consortium-admin-fee" required min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="consortium-reserve-fund" class="form-label">Fundo de Reserva (%) *</label>
+                                                            <input type="number" class="form-control" id="consortium-reserve-fund" required min="0" max="100" step="0.01">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="consortium-insurance" class="form-label">Seguros (%)</label>
+                                                            <input type="number" class="form-control" id="consortium-insurance" min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="consortium-bid-value" class="form-label">Valor do Lance (%)</label>
+                                                            <input type="number" class="form-control" id="consortium-bid-value" min="0" max="100" step="0.01">
+                                                            <div class="form-text">Percentual do valor da carta</div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="consortium-bid-payment" class="form-label">Forma de Pagamento do Lance</label>
+                                                            <select class="form-select" id="consortium-bid-payment">
+                                                                <option value="own">Recursos Próprios</option>
+                                                                <option value="fgts">FGTS</option>
+                                                                <option value="none">Não se aplica</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="consortium-inflation" class="form-label">Inflação Projetada (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="consortium-inflation" min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="consortium-property-appreciation" class="form-label">Valorização Imobiliária (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="consortium-property-appreciation" min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="consortium-alternative-return" class="form-label">Rentabilidade Alternativa (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="consortium-alternative-return" min="0" max="100" step="0.01">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <label for="consortium-simulation-name" class="form-label">Nome da Simulação *</label>
+                                                            <input type="text" class="form-control" id="consortium-simulation-name" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                        <button type="button" class="btn btn-secondary me-md-2" id="consortium-reset-btn">Limpar</button>
+                                                        <button type="submit" class="btn btn-primary">Calcular</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            
+                                            <!-- Formulário: Aluguel -->
+                                            <div class="tab-pane fade" id="rent-form">
+                                                <h5 class="card-title">Simulação de Aluguel</h5>
+                                                <form id="rent-simulation-form">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label for="rent-monthly-value" class="form-label">Valor do Aluguel Mensal (R$) *</label>
+                                                            <input type="number" class="form-control" id="rent-monthly-value" required min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="rent-annual-adjustment" class="form-label">Reajuste Anual (%) *</label>
+                                                            <input type="number" class="form-control" id="rent-annual-adjustment" required min="0" max="100" step="0.01">
+                                                            <div class="form-text">Geralmente IGP-M</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="rent-time-horizon" class="form-label">Horizonte de Tempo (anos) *</label>
+                                                            <input type="number" class="form-control" id="rent-time-horizon" required min="1" max="50" step="1">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="rent-deposit" class="form-label">Depósito Caução (R$)</label>
+                                                            <input type="number" class="form-control" id="rent-deposit" min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="rent-insurance" class="form-label">Seguro Fiança (R$)</label>
+                                                            <input type="number" class="form-control" id="rent-insurance" min="0" step="0.01">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="rent-admin-fee" class="form-label">Taxa de Administração (%)</label>
+                                                            <input type="number" class="form-control" id="rent-admin-fee" min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="rent-property-tax" class="form-label">IPTU Anual (R$)</label>
+                                                            <input type="number" class="form-control" id="rent-property-tax" min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="rent-condo-fee" class="form-label">Condomínio Mensal (R$)</label>
+                                                            <input type="number" class="form-control" id="rent-condo-fee" min="0" step="0.01">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="rent-investment-value" class="form-label">Valor Disponível para Investimento (R$)</label>
+                                                            <input type="number" class="form-control" id="rent-investment-value" min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="rent-investment-return" class="form-label">Rentabilidade do Investimento (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="rent-investment-return" min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="rent-inflation" class="form-label">Inflação Projetada (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="rent-inflation" min="0" max="100" step="0.01">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <label for="rent-simulation-name" class="form-label">Nome da Simulação *</label>
+                                                            <input type="text" class="form-control" id="rent-simulation-name" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                        <button type="button" class="btn btn-secondary me-md-2" id="rent-reset-btn">Limpar</button>
+                                                        <button type="submit" class="btn btn-primary">Calcular</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            
+                                            <!-- Formulário: Outros Empréstimos -->
+                                            <div class="tab-pane fade" id="loan-form">
+                                                <h5 class="card-title">Simulação de Outros Tipos de Empréstimos</h5>
+                                                <form id="loan-simulation-form">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="loan-value" class="form-label">Valor do Empréstimo (R$) *</label>
+                                                            <input type="number" class="form-control" id="loan-value" required min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="loan-interest-rate" class="form-label">Taxa de Juros (% a.a.) *</label>
+                                                            <input type="number" class="form-control" id="loan-interest-rate" required min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="loan-term" class="form-label">Prazo (meses) *</label>
+                                                            <input type="number" class="form-control" id="loan-term" required min="1" max="360" step="1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="loan-amortization-system" class="form-label">Sistema de Amortização *</label>
+                                                            <select class="form-select" id="loan-amortization-system" required>
+                                                                <option value="price">Price (parcelas fixas)</option>
+                                                                <option value="sac">SAC (amortização constante)</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="loan-guarantees" class="form-label">Garantias Exigidas</label>
+                                                            <select class="form-select" id="loan-guarantees">
+                                                                <option value="none">Sem garantia</option>
+                                                                <option value="property">Imóvel</option>
+                                                                <option value="vehicle">Veículo</option>
+                                                                <option value="other">Outra garantia</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="loan-contract-costs" class="form-label">Custos de Contratação (R$)</label>
+                                                            <input type="number" class="form-control" id="loan-contract-costs" min="0" step="0.01">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="loan-insurance" class="form-label">Seguros Obrigatórios (R$)</label>
+                                                            <input type="number" class="form-control" id="loan-insurance" min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="loan-portability" class="form-label">Possibilidade de Portabilidade</label>
+                                                            <select class="form-select" id="loan-portability">
+                                                                <option value="yes">Sim</option>
+                                                                <option value="no">Não</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="loan-inflation" class="form-label">Inflação Projetada (% a.a.)</label>
+                                                            <input type="number" class="form-control" id="loan-inflation" min="0" max="100" step="0.01">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <label for="loan-simulation-name" class="form-label">Nome da Simulação *</label>
+                                                            <input type="text" class="form-control" id="loan-simulation-name" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                        <button type="button" class="btn btn-secondary me-md-2" id="loan-reset-btn">Limpar</button>
+                                                        <button type="submit" class="btn btn-primary">Calcular</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            
+                                            <!-- Formulário: Amortização -->
+                                            <div class="tab-pane fade" id="amortization-form">
+                                                <h5 class="card-title">Simulação de Amortização de Dívidas</h5>
+                                                <form id="amortization-simulation-form">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="amortization-current-balance" class="form-label">Saldo Devedor Atual (R$) *</label>
+                                                            <input type="number" class="form-control" id="amortization-current-balance" required min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="amortization-value" class="form-label">Valor Disponível para Amortização (R$) *</label>
+                                                            <input type="number" class="form-control" id="amortization-value" required min="0" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="amortization-system" class="form-label">Sistema de Amortização do Contrato *</label>
+                                                            <select class="form-select" id="amortization-system" required>
+                                                                <option value="price">Price (parcelas fixas)</option>
+                                                                <option value="sac">SAC (amortização constante)</option>
+                                                                <option value="sacre">SACRE (amortização crescente)</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label for="amortization-interest-rate" class="form-label">Taxa de Juros do Contrato (% a.a.) *</label>
+                                                            <input type="number" class="form-control" id="amortization-interest-rate" required min="0" max="100" step="0.01">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="amortization-remaining-term" class="form-label">Prazo Restante (meses) *</label>
+                                                            <input type="number" class="form-control" id="amortization-remaining-term" required min="1" max="420" step="1">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="amortization-current-installment" class="form-label">Parcela Atual (R$) *</label>
+                                                            <input type="number" class="form-control" id="amortization-current-installment" required min="0" step="0.01">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <label class="form-label">Opção de Amortização *</label>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="amortization-option" id="amortization-option-term" value="term" checked>
+                                                                <label class="form-check-label" for="amortization-option-term">
+                                                                    Redução do prazo (mantendo parcela)
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="amortization-option" id="amortization-option-installment" value="installment">
+                                                                <label class="form-check-label" for="amortization-option-installment">
+                                                                    Redução da parcela (mantendo prazo)
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="amortization-option" id="amortization-option-custom" value="custom">
+                                                                <label class="form-check-label" for="amortization-option-custom">
+                                                                    Combinação personalizada
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <label for="amortization-simulation-name" class="form-label">Nome da Simulação *</label>
+                                                            <input type="text" class="form-control" id="amortization-simulation-name" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                        <button type="button" class="btn btn-secondary me-md-2" id="amortization-reset-btn">Limpar</button>
+                                                        <button type="submit" class="btn btn-primary">Calcular</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Área de Resultados (inicialmente oculta) -->
+                        <div class="row mb-4 d-none" id="simulation-results">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">Resultados da Simulação</h5>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary me-2" id="save-simulation-btn">
+                                                <i class="fas fa-save me-1"></i>Salvar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" id="export-simulation-btn">
+                                                <i class="fas fa-file-export me-1"></i>Exportar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="nav nav-tabs" id="results-tabs">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" id="summary-tab" data-bs-toggle="tab" href="#summary">Resumo</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="evolution-tab" data-bs-toggle="tab" href="#evolution">Evolução</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="charts-tab" data-bs-toggle="tab" href="#charts">Gráficos</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="sensitivity-tab" data-bs-toggle="tab" href="#sensitivity">Sensibilidade</a>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content mt-3" id="results-tab-content">
+                                            <!-- Resumo -->
+                                            <div class="tab-pane fade show active" id="summary">
+                                                <div id="summary-content">
+                                                    <!-- Preenchido via JavaScript -->
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Evolução -->
+                                            <div class="tab-pane fade" id="evolution">
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped table-hover" id="evolution-table">
+                                                        <!-- Preenchido via JavaScript -->
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Gráficos -->
+                                            <div class="tab-pane fade" id="charts">
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="card h-100">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">Evolução do Saldo Devedor</h6>
+                                                                <canvas id="balance-chart"></canvas>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="card h-100">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">Composição das Parcelas</h6>
+                                                                <canvas id="installment-chart"></canvas>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="card h-100">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">Evolução Patrimonial</h6>
+                                                                <canvas id="equity-chart"></canvas>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="card h-100">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">Custo Total vs. Tempo</h6>
+                                                                <canvas id="cost-chart"></canvas>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Sensibilidade -->
+                                            <div class="tab-pane fade" id="sensitivity">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-12">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">Análise de Sensibilidade</h6>
+                                                                <p class="card-text">
+                                                                    Esta análise mostra como os resultados da simulação variam de acordo com mudanças em parâmetros-chave.
+                                                                </p>
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-striped table-hover" id="sensitivity-table">
+                                                                        <!-- Preenchido via JavaScript -->
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">Gráfico de Sensibilidade</h6>
+                                                                <canvas id="sensitivity-chart"></canvas>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Meus Cenários -->
+                    <div id="scenarios-content" class="content-section">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Meus Cenários</h1>
+                            <button class="btn btn-primary" id="new-scenario-btn">
+                                <i class="fas fa-plus me-1"></i>Novo Cenário
+                            </button>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div id="no-scenarios" class="text-center py-5">
+                                            <i class="fas fa-layer-group fa-4x mb-3 text-muted"></i>
+                                            <h5>Nenhum cenário encontrado</h5>
+                                            <p class="text-muted">Crie um novo cenário para agrupar e comparar suas simulações.</p>
+                                            <button class="btn btn-primary" id="create-first-scenario-btn">
+                                                <i class="fas fa-plus me-1"></i>Criar Primeiro Cenário
+                                            </button>
+                                        </div>
+                                        <div id="scenarios-list" class="d-none">
+                                            <!-- Preenchido via JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Detalhes do Cenário (inicialmente oculto) -->
+                        <div class="row mb-4 d-none" id="scenario-details">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0" id="scenario-title">Detalhes do Cenário</h5>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary me-2" id="add-to-study-btn">
+                                                <i class="fas fa-chart-line me-1"></i>Adicionar a Estudo
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary me-2" id="edit-scenario-btn">
+                                                <i class="fas fa-edit me-1"></i>Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" id="delete-scenario-btn">
+                                                <i class="fas fa-trash-alt me-1"></i>Excluir
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <h6>Descrição</h6>
+                                                <p id="scenario-description">Descrição do cenário</p>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <h6>Simulações Incluídas</h6>
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped table-hover" id="scenario-simulations-table">
+                                                        <!-- Preenchido via JavaScript -->
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h6>Análise Comparativa</h6>
+                                                <div id="scenario-analysis">
+                                                    <!-- Preenchido via JavaScript -->
+                                                </div>
+                                                <div class="text-center mt-3">
+                                                    <button class="btn btn-primary" id="generate-scenario-analysis-btn">
+                                                        <i class="fas fa-sync me-1"></i>Gerar Análise
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Meus Estudos -->
+                    <div id="studies-content" class="content-section">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Meus Estudos</h1>
+                            <button class="btn btn-primary" id="new-study-btn">
+                                <i class="fas fa-plus me-1"></i>Novo Estudo
+                            </button>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div id="no-studies" class="text-center py-5">
+                                            <i class="fas fa-chart-line fa-4x mb-3 text-muted"></i>
+                                            <h5>Nenhum estudo encontrado</h5>
+                                            <p class="text-muted">Crie um novo estudo para comparar diferentes cenários e modalidades.</p>
+                                            <button class="btn btn-primary" id="create-first-study-btn">
+                                                <i class="fas fa-plus me-1"></i>Criar Primeiro Estudo
+                                            </button>
+                                        </div>
+                                        <div id="studies-list" class="d-none">
+                                            <!-- Preenchido via JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Detalhes do Estudo (inicialmente oculto) -->
+                        <div class="row mb-4 d-none" id="study-details">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0" id="study-title">Detalhes do Estudo</h5>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary me-2" id="export-study-btn">
+                                                <i class="fas fa-file-export me-1"></i>Exportar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary me-2" id="edit-study-btn">
+                                                <i class="fas fa-edit me-1"></i>Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" id="delete-study-btn">
+                                                <i class="fas fa-trash-alt me-1"></i>Excluir
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <h6>Descrição</h6>
+                                                <p id="study-description">Descrição do estudo</p>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <h6>Cenários Incluídos</h6>
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped table-hover" id="study-scenarios-table">
+                                                        <!-- Preenchido via JavaScript -->
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h6>Análise Comparativa</h6>
+                                                <div id="study-analysis">
+                                                    <!-- Preenchido via JavaScript -->
+                                                </div>
+                                                <div class="text-center mt-3">
+                                                    <button class="btn btn-primary" id="generate-study-analysis-btn">
+                                                        <i class="fas fa-sync me-1"></i>Gerar Análise
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
 
-    <div class="row">
-      <div>
-        <label for="period">Prazo (em meses):</label>
-        <input type="number" id="period" required>
-      </div>
-      <div>
-        <label for="currentSavings">Valor já Guardado (R$):</label>
-        <input type="text" id="currentSavings" required oninput="formatCurrency(this)">
-      </div>
+    <!-- Rodapé -->
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h6>Análise Imobiliária</h6>
+                    <p class="text-muted">Ferramenta definitiva para análise de compra vs. aluguel de imóveis.</p>
+                </div>
+                <div class="col-md-4">
+                    <h6>Referências</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-decoration-none">Banco Central do Brasil</a></li>
+                        <li><a href="#" class="text-decoration-none">Caixa Econômica Federal</a></li>
+                        <li><a href="#" class="text-decoration-none">ABAC</a></li>
+                        <li><a href="#" class="text-decoration-none">ABECIP</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6>Contato</h6>
+                    <p class="text-muted">
+                        Para suporte ou dúvidas, entre em contato através do e-mail: 
+                        <a href="mailto:suporte@analiseimobiliaria.com.br" class="text-decoration-none">suporte@analiseimobiliaria.com.br</a>
+                    </p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <p class="text-muted">&copy; 2025 Análise Imobiliária. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modais -->
+    <!-- Modal de Ajuda -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="helpModalLabel">Ajuda e Informações</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Como usar esta ferramenta</h6>
+                    <p>
+                        Esta aplicação permite criar simulações detalhadas para diferentes modalidades de aquisição ou aluguel de imóveis.
+                        Você pode salvar suas simulações em cenários e comparar diferentes cenários em estudos abrangentes.
+                    </p>
+                    
+                    <h6>Hierarquia de Dados</h6>
+                    <p>
+                        <strong>Simulação:</strong> Cálculo individual com parâmetros específicos para uma modalidade.<br>
+                        <strong>Cenário:</strong> Conjunto de simulações de uma mesma modalidade para comparação.<br>
+                        <strong>Estudo:</strong> Conjunto de cenários para comparação ampla entre diferentes modalidades.
+                    </p>
+                    
+                    <h6>Modalidades Disponíveis</h6>
+                    <ul>
+                        <li><strong>Compra à Vista:</strong> Análise de compra com recursos próprios.</li>
+                        <li><strong>Financiamento:</strong> Simulação de financiamento imobiliário com diferentes sistemas de amortização.</li>
+                        <li><strong>Consórcio:</strong> Simulação de consórcio imobiliário.</li>
+                        <li><strong>Aluguel:</strong> Análise de custos e benefícios do aluguel.</li>
+                        <li><strong>Outros Empréstimos:</strong> Simulação de empréstimos alternativos para aquisição.</li>
+                        <li><strong>Amortização:</strong> Análise de amortizações extraordinárias em dívidas existentes.</li>
+                    </ul>
+                    
+                    <h6>Dicas para Análise Eficaz</h6>
+                    <p>
+                        Para uma análise mais precisa, considere fatores como inflação projetada, valorização imobiliária e 
+                        rentabilidade de investimentos alternativos. Estes elementos são fundamentais para comparar adequadamente 
+                        diferentes modalidades ao longo do tempo.
+                    </p>
+                    <p>
+                        Lembre-se que o comprometimento máximo recomendado da renda familiar com financiamento imobiliário 
+                        é de 30%, conforme a legislação vigente.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="row">
-      <div>
-        <label for="rate">Taxa de Juros (%):</label>
-        <input type="text" id="rate" required oninput="formatPercentage(this)">
-      </div>
-      <div>
-        <label for="rateType">Tipo de Taxa:</label>
-        <select id="rateType">
-          <option value="annual">Anual</option>
-          <option value="monthly">Mensal</option>
-        </select>
-      </div>
+    <!-- Modal de Novo Cenário -->
+    <div class="modal fade" id="newScenarioModal" tabindex="-1" aria-labelledby="newScenarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newScenarioModalLabel">Novo Cenário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="new-scenario-form">
+                        <div class="mb-3">
+                            <label for="scenario-name" class="form-label">Nome do Cenário *</label>
+                            <input type="text" class="form-control" id="scenario-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="scenario-description-input" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="scenario-description-input" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="scenario-modality" class="form-label">Modalidade *</label>
+                            <select class="form-select" id="scenario-modality" required>
+                                <option value="cash">Compra à Vista</option>
+                                <option value="financing">Financiamento</option>
+                                <option value="consortium">Consórcio</option>
+                                <option value="rent">Aluguel</option>
+                                <option value="loan">Outros Empréstimos</option>
+                                <option value="amortization">Amortização</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-new-scenario-btn">Salvar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <label>Você sabe a alíquota de imposto sobre o rendimento?</label>
-    <div class="row">
-      <div>
-        <select id="knowsTax" onchange="toggleTaxInput('tax', '15,00 %')">
-          <option value="no">Não</option>
-          <option value="yes">Sim</option>
-        </select>
-      </div>
-      <div>
-        <input type="text" id="tax" placeholder="15,00 %" oninput="formatPercentage(this)">
-      </div>
-    </div>
+    <!-- Modal de Novo Estudo -->
+    <div class="modal fade" id="newStudyModal" tabindex="-1" aria-labelledby="newStudyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newStudyModalLabel">Novo Estudo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="new-study-form">
+                        <div class="mb-3">
+                            <label for="study-name" class="form-label">Nome do Estudo *</label>
+                            <input type="text" class="form-control" id="study-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="study-description-input" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="study-description-input" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="study-scenarios" class="form-label">Cenários Disponíveis</label>
+                            <div id="study-scenarios-checkboxes">
+                                <!-- Preenchido via JavaScript -->
+                                <div class="text-center py-3 text-muted">
+                                    <p>Nenhum cenário disponível. Crie cenários primeiro.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-new-study-btn">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <label>Você sabe a taxa de inflação dos últimos 12 meses?</label>
-    <div class="row">
-      <div>
-        <select id="knowsInflation" onchange="toggleTaxInput('inflation', '5,00 %')">
-          <option value="no">Não</option>
-          <option value="yes">Sim</option>
-        </select>
-      </div>
-      <div>
-        <input type="text" id="inflation" placeholder="5,00 %" oninput="formatPercentage(this)">
-      </div>
-    </div>
-
-    <button type="button" onclick="calculateSavings()">Calcular</button>
-  </form>
-
-  <div id="result" class="result"></div>
-  
-  <div id="recommendation" class="recommendation" style="display: none;">
-    <h3>Análise Automatizada</h3>
-    <div id="recommendationText"></div>
-  </div>
-  
-  <!-- Botão WhatsApp fora da caixa de análise automatizada -->
-  <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
-    Avançar para análise personalizada
-  </a>
-  
-  <div id="chartUnicoContainer" class="chart-container" style="display: none;">
-    <div class="chart-title">Evolução do Investimento Único</div>
-    <div class="chart-nav">
-      <button onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
-      <button onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
-    </div>
-    <div class="chart-content">
-      <div id="chartUnicoSlide" class="chart-slide">
-        <canvas id="chartUnico"></canvas>
-      </div>
-      <div id="tableUnicoSlide" class="table-slide" style="display: none;">
-        <table id="tableUnico" class="data-table">
-          <thead>
-            <tr>
-              <th>Mês</th>
-              <th>Total Investido</th>
-              <th>Juros</th>
-              <th>Total Juros</th>
-              <th>Total Acumulado</th>
-              <th>Imposto</th>
-              <th>Valor Líquido</th>
-              <th>Objetivo Corrigido</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-  
-  <div id="chartIdealContainer" class="chart-container" style="display: none;">
-    <div class="chart-title">Evolução do Plano Ideal</div>
-    <div class="chart-nav">
-      <button onclick="showChartSlide('Ideal', 'chart')">Gráfico</button>
-      <button onclick="showChartSlide('Ideal', 'table')">Memória de Cálculo</button>
-    </div>
-    <div class="chart-content">
-      <div id="chartIdealSlide" class="chart-slide">
-        <canvas id="chartIdeal"></canvas>
-      </div>
-      <div id="tableIdealSlide" class="table-slide" style="display: none;">
-        <table id="tableIdeal" class="data-table">
-          <thead>
-            <tr>
-              <th>Mês</th>
-              <th>Total Investido</th>
-              <th>Juros</th>
-              <th>Total Juros</th>
-              <th>Total Acumulado</th>
-              <th>Imposto</th>
-              <th>Valor Líquido</th>
-              <th>Objetivo Corrigido</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-  
-  <div id="chartAtualContainer" class="chart-container" style="display: none;">
-    <div class="chart-title">Evolução da Poupança Atual</div>
-    <div class="chart-nav">
-      <button onclick="showChartSlide('Atual', 'chart')">Gráfico</button>
-      <button onclick="showChartSlide('Atual', 'table')">Memória de Cálculo</button>
-    </div>
-    <div class="chart-content">
-      <div id="chartAtualSlide" class="chart-slide">
-        <canvas id="chartAtual"></canvas>
-      </div>
-      <div id="tableAtualSlide" class="table-slide" style="display: none;">
-        <table id="tableAtual" class="data-table">
-          <thead>
-            <tr>
-              <th>Mês</th>
-              <th>Total Investido</th>
-              <th>Juros</th>
-              <th>Total Juros</th>
-              <th>Total Acumulado</th>
-              <th>Imposto</th>
-              <th>Valor Líquido</th>
-              <th>Objetivo Corrigido</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-  
-  <div id="chartRentabilidadeContainer" class="chart-container" style="display: none;">
-    <div class="chart-title">Evolução da Rentabilidade Necessária</div>
-    <div class="chart-nav">
-      <button onclick="showChartSlide('Rentabilidade', 'chart')">Gráfico</button>
-      <button onclick="showChartSlide('Rentabilidade', 'table')">Memória de Cálculo</button>
-    </div>
-    <div class="chart-content">
-      <div id="chartRentabilidadeSlide" class="chart-slide">
-        <canvas id="chartRentabilidade"></canvas>
-      </div>
-      <div id="tableRentabilidadeSlide" class="table-slide" style="display: none;">
-        <table id="tableRentabilidade" class="data-table">
-          <thead>
-            <tr>
-              <th>Mês</th>
-              <th>Total Investido</th>
-              <th>Juros</th>
-              <th>Total Juros</th>
-              <th>Total Acumulado</th>
-              <th>Imposto</th>
-              <th>Valor Líquido</th>
-              <th>Objetivo Corrigido</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Variáveis globais para armazenar os resultados e textos
-    let goalDescriptionText = '';
-    let resultText = '';
+    <!-- Módulos JavaScript -->
+    <script type="module" src="calculations.js"></script>
+    <script type="module" src="storage.js"></script>
+    <script type="module" src="charts.js"></script>
+    <script type="module" src="export.js"></script>
+    <script type="module" src="scripts.js"></script>
+</body>
+</html>!-- JavaScript personalizado -->
+    <script src="scripts.js"></script>
     
-    function formatCurrency(input) {
-      let value = input.value.replace(/\D/g, '');
-      value = (parseFloat(value) / 100).toFixed(2);
-      input.value = 'R$ ' + value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.').replace(/\.(\d{2})$/, ',$1');
-    }
-
-    function formatPercentage(input) {
-      let value = input.value.replace(/\D/g, '');
-      value = (parseFloat(value) / 100).toFixed(2);
-      input.value = value.replace('.', ',') + ' %';
-    }
-
-    function toggleTaxInput(id, defaultValue) {
-      const select = document.getElementById(id === 'tax' ? 'knowsTax' : 'knowsInflation');
-      const input = document.getElementById(id);
-      input.disabled = select.value !== 'yes';
-      input.value = select.value === 'yes' ? '' : defaultValue;
-    }
-
-    function parseCurrency(value) {
-      return parseFloat(value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
-    }
-
-    function parsePercentage(value) {
-      return parseFloat(value.replace('%', '').replace(',', '.')) / 100 || 0;
-    }
-
-    // Função para formatar valores monetários com sempre duas casas decimais
-    function formatMoney(value) {
-      return value.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    }
-
-    // Função para alternar entre visualização de gráfico e tabela
-    function showChartSlide(chartId, slideType) {
-      const chartSlide = document.getElementById(`chart${chartId}Slide`);
-      const tableSlide = document.getElementById(`table${chartId}Slide`);
-      
-      if (slideType === 'chart') {
-        chartSlide.style.display = 'block';
-        tableSlide.style.display = 'none';
-      } else {
-        chartSlide.style.display = 'none';
-        tableSlide.style.display = 'block';
-      }
-    }
-
-    // Função para abrir o WhatsApp com a mensagem personalizada
-    function openWhatsAppChat() {
-      // Obter o texto do objetivo e da caixa de resposta
-      const goalText = goalDescriptionText;
-      const resultBoxText = resultText;
-      
-     // Criar a mensagem para o WhatsApp
-const message = `Oi Hugo, queria tua ajuda com o meu objetivo:
-${goalText}
-
-Segue o resumo:
-${resultBoxText}`;
-      
-      // Codificar a mensagem para URL
-      const encodedMessage = encodeURIComponent(message);
-      
-      // Criar o link do WhatsApp usando a API correta
-      const whatsappUrl = `https://api.whatsapp.com/send?phone=5581994297920&text=${encodedMessage}`;
-      
-      // Abrir o link em uma nova janela
-      window.open(whatsappUrl, '_blank');
-    }
-
-    // Função para preencher a tabela de dados
-    function fillDataTable(tableId, data, goal, inflation) {
-      const table = document.getElementById(tableId);
-      const tbody = table.querySelector('tbody');
-      tbody.innerHTML = '';
-      
-      // Começar do mês 1 (não do mês 0)
-      for (let i = 1; i < data.length; i++) {
-        const row = data[i];
-        const tr = document.createElement('tr');
-        
-        // Mês
-        const tdMes = document.createElement('td');
-        tdMes.textContent = row.month;
-        tr.appendChild(tdMes);
-        
-        // Total Investido
-        const tdInvestido = document.createElement('td');
-        tdInvestido.textContent = `R$ ${formatMoney(row.totalInvestido)}`;
-        tr.appendChild(tdInvestido);
-        
-        // Juros
-        const tdJuros = document.createElement('td');
-        tdJuros.textContent = `R$ ${formatMoney(row.juros)}`;
-        tr.appendChild(tdJuros);
-        
-        // Total Juros
-        const tdTotalJuros = document.createElement('td');
-        tdTotalJuros.textContent = `R$ ${formatMoney(row.totalJuros)}`;
-        tr.appendChild(tdTotalJuros);
-        
-        // Total Acumulado
-        const tdAcumulado = document.createElement('td');
-        tdAcumulado.textContent = `R$ ${formatMoney(row.totalAcumulado)}`;
-        tr.appendChild(tdAcumulado);
-        
-        // Imposto
-        const tdImposto = document.createElement('td');
-        tdImposto.textContent = `R$ ${formatMoney(row.imposto)}`;
-        tr.appendChild(tdImposto);
-        
-        // Valor Líquido
-        const tdLiquido = document.createElement('td');
-        tdLiquido.textContent = `R$ ${formatMoney(row.valorLiquido)}`;
-        tr.appendChild(tdLiquido);
-        
-        // Objetivo Corrigido
-        const tdObjetivo = document.createElement('td');
-        tdObjetivo.textContent = `R$ ${formatMoney(row.objetivoCorrigido)}`;
-        tr.appendChild(tdObjetivo);
-        
-        tbody.appendChild(tr);
-      }
-    }
-
-    function drawChart(ctx, bruto, liquido, investido, objetivoCorrigido, corBruto, corLiquido, corInvestido, corObjetivo) {
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: bruto.map((_, i) => i + 1), // Começar do mês 1
-          datasets: [
-            {
-              label: 'Valor Investido',
-              data: investido,
-              borderColor: corInvestido,
-              pointRadius: 0,
-              fill: false,
-              tension: 0.4
-            },
-            {
-              label: 'Valor Líquido',
-              data: liquido,
-              borderColor: corLiquido,
-              pointRadius: 0,
-              fill: '-1',
-              backgroundColor: 'rgba(0, 0, 255, 0.1)',
-              tension: 0.4
-            },
-            {
-              label: 'Valor Bruto',
-              data: bruto,
-              borderColor: corBruto,
-              pointRadius: 0,
-              fill: '-1',
-              backgroundColor: 'rgba(255, 0, 0, 0.1)',
-              tension: 0.4
-            },
-            {
-              label: 'Objetivo Corrigido',
-              data: objetivoCorrigido,
-              borderColor: corObjetivo, // Cor para a linha do objetivo
-              borderDash: [5, 5], // Linha tracejada
-              pointRadius: 0,
-              fill: false,
-              tension: 0.1 // Linha mais reta
-            }
-          ]
-        },
-        options: {
-          elements: { point: { radius: 0 } },
-          scales: {
-            x: { 
-              grid: { drawTicks: false, drawBorder: false },
-              title: {
-                display: true,
-                text: 'Meses'
-              }
-            },
-            y: { 
-              grid: { drawTicks: false, drawBorder: false },
-              title: {
-                display: true,
-                text: 'Valor (R$)'
-              }
-            }
-          }
-        }
-      });
-    }
-
-    // Função para calcular juros compostos com aportes mensais
-    function calculateCompoundInterest(initialValue, monthlyContribution, monthlyRate, periods, tax = 0, goal = 0, inflation = 0) {
-      let totalValue = initialValue;
-      let totalInvested = initialValue;
-      let totalJuros = 0;
-      let objetivoCorrigido = goal;
-      
-      const valoresMensais = [];
-      
-      // Mês 0 (inicial) - não será exibido na tabela, mas é usado para cálculos
-      valoresMensais.push({
-        month: 0,
-        juros: 0,
-        totalInvestido: totalInvested,
-        totalJuros: 0,
-        imposto: 0,
-        valorLiquido: totalValue,
-        totalAcumulado: totalValue,
-        objetivoCorrigido: objetivoCorrigido
-      });
-      
-      for (let i = 1; i <= periods; i++) {
-        // Calcular juros sobre o valor total
-        const jurosDoMes = totalValue * monthlyRate;
-        totalJuros += jurosDoMes;
-        
-        // Adicionar aporte mensal
-        totalInvested += monthlyContribution;
-        
-        // Atualizar valor total: valor anterior + juros + aporte
-        totalValue = totalValue + jurosDoMes + monthlyContribution;
-        
-        // Calcular imposto sobre o total de juros
-        const impostoTotal = totalJuros * tax;
-        
-        // Calcular valor líquido: total acumulado - imposto
-        const valorLiquido = totalValue - impostoTotal;
-        
-        // Atualizar objetivo corrigido pela inflação a cada 12 meses
-        if (i % 12 === 0) {
-          objetivoCorrigido = objetivoCorrigido * (1 + inflation);
-        }
-        
-        // Registrar valores mensais para gráfico e análise
-        valoresMensais.push({
-          month: i,
-          juros: jurosDoMes,
-          totalInvestido: totalInvested,
-          totalJuros: totalJuros,
-          imposto: impostoTotal,
-          valorLiquido: valorLiquido,
-          totalAcumulado: totalValue,
-          objetivoCorrigido: objetivoCorrigido
-        });
-      }
-      
-      return {
-        finalValue: totalValue,
-        totalInvested: totalInvested,
-        totalJuros: totalJuros,
-        totalImposto: totalJuros * tax,
-        valoresMensais: valoresMensais
-      };
-    }
-
-    // Função para calcular a taxa anual necessária para atingir o objetivo no prazo desejado
-    function calculateRequiredRate(goal, currentSavings, monthlyContribution, period, tax, inflation) {
-      // Ajustar o objetivo pela inflação
-      const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
-      
-      // Busca binária para encontrar a taxa mensal necessária
-      let lowRate = 0;
-      let highRate = 1; // 100% ao mês como limite superior inicial
-      let requiredMonthlyRate = 0;
-      let iterations = 0;
-      let result;
-      
-      while (iterations < 100) { // Limite de iterações para evitar loop infinito
-        requiredMonthlyRate = (lowRate + highRate) / 2;
-        result = calculateCompoundInterest(currentSavings, monthlyContribution, requiredMonthlyRate, period, tax, goal, inflation);
-        
-        // Verificar se o valor líquido final está próximo o suficiente do objetivo
-        const valorLiquidoFinal = result.valoresMensais[period].valorLiquido;
-        const objetivoFinal = result.valoresMensais[period].objetivoCorrigido;
-        
-        if (Math.abs(valorLiquidoFinal - objetivoFinal) < 0.01) {
-          break;
-        }
-        
-        // Ajusta os limites da busca
-        if (valorLiquidoFinal > objetivoFinal) {
-          highRate = requiredMonthlyRate;
-        } else {
-          lowRate = requiredMonthlyRate;
-        }
-        
-        iterations++;
-      }
-      
-      // Converter taxa mensal para anual: (1 + taxa_mensal)^12 - 1
-      const requiredAnnualRate = Math.pow(1 + requiredMonthlyRate, 12) - 1;
-      
-      return {
-        monthlyRate: requiredMonthlyRate,
-        annualRate: requiredAnnualRate,
-        finalValue: result.finalValue,
-        finalGoal: inflatedGoal,
-        valoresMensais: result.valoresMensais
-      };
-    }
-
-    // Função para resumir o texto do objetivo
-    function summarizeGoalText(text) {
-      if (!text || text.trim() === '') {
-        return '';
-      }
-      
-      // Palavras-chave para identificar tipos de objetivos
-      const keywords = {
-        imovel: ['imóvel', 'casa', 'apartamento', 'moradia', 'residência', 'propriedade', 'terreno'],
-        viagem: ['viagem', 'viajar', 'turismo', 'férias', 'exterior', 'internacional', 'conhecer'],
-        educacao: ['educação', 'faculdade', 'universidade', 'curso', 'estudo', 'formação', 'pós-graduação', 'mestrado', 'doutorado'],
-        aposentadoria: ['aposentadoria', 'aposentar', 'independência financeira', 'liberdade financeira', 'renda passiva'],
-        veiculo: ['carro', 'veículo', 'automóvel', 'moto', 'motocicleta', 'caminhão'],
-        negocio: ['negócio', 'empresa', 'empreendimento', 'startup', 'investimento', 'sociedade'],
-        saude: ['saúde', 'tratamento', 'cirurgia', 'médico', 'hospital', 'plano de saúde'],
-        familia: ['família', 'filhos', 'casamento', 'herança', 'futuro dos filhos']
-      };
-      
-      // Converter texto para minúsculas para facilitar a comparação
-      const lowerText = text.toLowerCase();
-      
-      // Identificar o tipo de objetivo
-      let goalType = '';
-      let maxMatches = 0;
-      
-      for (const [type, words] of Object.entries(keywords)) {
-        const matches = words.filter(word => lowerText.includes(word)).length;
-        if (matches > maxMatches) {
-          maxMatches = matches;
-          goalType = type;
-        }
-      }
-      
-      // Criar resumo com base no tipo de objetivo identificado
-      let summary = '';
-      
-      switch (goalType) {
-        case 'imovel':
-          summary = 'aquisição de imóvel';
-          break;
-        case 'viagem':
-          summary = 'realização de viagem';
-          break;
-        case 'educacao':
-          summary = 'investimento em educação';
-          break;
-        case 'aposentadoria':
-          summary = 'planejamento para aposentadoria';
-          break;
-        case 'veiculo':
-          summary = 'compra de veículo';
-          break;
-        case 'negocio':
-          summary = 'investimento em negócio próprio';
-          break;
-        case 'saude':
-          summary = 'cuidados com saúde';
-          break;
-        case 'familia':
-          summary = 'planejamento familiar';
-          break;
-        default:
-          // Se não conseguir identificar um tipo específico, extrair as primeiras palavras
-          const words = lowerText.split(' ');
-          if (words.length > 3) {
-            summary = words.slice(0, 3).join(' ') + '...';
-          } else {
-            summary = 'objetivo financeiro';
-          }
-      }
-      
-      // Verificar se há menção à importância ou motivo
-      const importanceKeywords = ['importante', 'importância', 'significa', 'porque', 'pois', 'para', 'motivo'];
-      let hasImportance = importanceKeywords.some(word => lowerText.includes(word));
-      
-      if (hasImportance) {
-        summary += ' com significado pessoal';
-      }
-      
-      return summary;
-    }
-
-    // Função para gerar análise automatizada
-    function generateRecommendation(goalDescription, goal, currentSavings, currentContribution, idealContribution, months, requiredRate, rate) {
-      const recommendationDiv = document.getElementById('recommendation');
-      const recommendationText = document.getElementById('recommendationText');
-      const whatsappButton = document.getElementById('whatsappButton');
-      
-      // Extrair informações relevantes
-      const goalGap = goal - currentSavings;
-      const contributionGap = idealContribution - currentContribution;
-      const contributionPercentage = (currentContribution / idealContribution) * 100;
-      const rateGap = requiredRate - rate;
-      
-      let analysis = '';
-      
-      // Análise da situação atual - começando diretamente aqui, sem introdução sobre o objetivo
-      if (currentSavings > 0) {
-        const savingsPercentage = (currentSavings / goal) * 100;
-        analysis += `<p>Valor já guardado: R$ ${formatMoney(currentSavings)}, o que representa ${savingsPercentage.toFixed(1).replace('.', ',')}% do objetivo. `;
-        
-        if (savingsPercentage < 10) {
-          analysis += `Este é um bom começo, mas ainda há um longo caminho pela frente.</p>`;
-        } else if (savingsPercentage < 30) {
-          analysis += `Já foram dados passos importantes em direção ao objetivo.</p>`;
-        } else if (savingsPercentage < 60) {
-          analysis += `Uma parte significativa do caminho já foi percorrida.</p>`;
-        } else {
-          analysis += `O objetivo está muito próximo de ser alcançado.</p>`;
-        }
-      } else {
-        analysis += `<p>Ainda não foi iniciada a poupança para este objetivo específico.</p>`;
-      }
-      
-      // Análise do aporte mensal
-      if (currentContribution > 0) {
-        if (contributionPercentage >= 100) {
-          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} é suficiente para atingir o objetivo no prazo desejado.</p>`;
-        } else if (contributionPercentage >= 80) {
-          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} está próximo do ideal. Um pequeno ajuste de R$ ${formatMoney(contributionGap)} a mais por mês seria o suficiente para atingir o objetivo no prazo desejado.</p>`;
-        } else if (contributionPercentage >= 50) {
-          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} representa um bom esforço, mas para atingir o objetivo no prazo desejado, seria necessário aumentar para R$ ${formatMoney(idealContribution)} por mês (um acréscimo de R$ ${formatMoney(contributionGap)}).</p>`;
-        } else {
-          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} está significativamente abaixo do ideal. Para atingir o objetivo no prazo desejado, seria necessário aumentar para R$ ${formatMoney(idealContribution)} por mês.</p>`;
-        }
-      } else {
-        analysis += `<p>Não estão sendo feitos aportes mensais. Para atingir o objetivo no prazo desejado, seria necessário poupar R$ ${formatMoney(idealContribution)} por mês.</p>`;
-      }
-      
-      // Análise da rentabilidade
-      if (rateGap > 0) {
-        const rateGapPercentage = rateGap * 100;
-        if (rateGapPercentage > 10) {
-          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace('.', ',')}% ao ano, o que está ${rateGapPercentage.toFixed(2).replace('.', ',')} pontos percentuais acima da taxa informada. Esta diferença é significativa e pode representar um risco maior.</p>`;
-        } else {
-          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace('.', ',')}% ao ano, o que está ${rateGapPercentage.toFixed(2).replace('.', ',')} pontos percentuais acima da taxa informada. Esta diferença é relativamente pequena e pode ser alcançável com ajustes na estratégia de investimento.</p>`;
-        }
-      } else {
-        analysis += `<p>A rentabilidade informada de ${(rate * 100).toFixed(2).replace('.', ',')}% ao ano é suficiente para atingir o objetivo no prazo desejado, desde que sejam mantidos os aportes mensais adequados.</p>`;
-      }
-      
-      recommendationText.innerHTML = analysis;
-      recommendationDiv.style.display = 'block';
-
-      // Mostrar o botão do WhatsApp
-      whatsappButton.style.display = 'block';
-    }
-
-    function calculateSavings() {
-      // Armazenar o texto do objetivo para uso posterior
-      goalDescriptionText = document.getElementById('goalDescription').value;
-      
-      // Resetar os gráficos antes de desenhar novos
-      const chartUnico = Chart.getChart("chartUnico");
-      if (chartUnico) chartUnico.destroy();
-      const chartIdeal = Chart.getChart("chartIdeal");
-      if (chartIdeal) chartIdeal.destroy();
-      const chartAtual = Chart.getChart("chartAtual");
-      if (chartAtual) chartAtual.destroy();
-      const chartRentabilidade = Chart.getChart("chartRentabilidade");
-      if (chartRentabilidade) chartRentabilidade.destroy();
-      
-      const goalDescription = document.getElementById("goalDescription").value;
-      const goal = parseCurrency(document.getElementById("goal").value);
-      const rate = parsePercentage(document.getElementById("rate").value);
-      const rateType = document.getElementById("rateType").value;
-      const knowsTax = document.getElementById("knowsTax").value;
-      const tax = knowsTax === 'yes' ? parsePercentage(document.getElementById("tax").value) : 0.15;
-      const knowsInflation = document.getElementById("knowsInflation").value;
-      const inflation = knowsInflation === 'yes' ? parsePercentage(document.getElementById("inflation").value) : 0.05;
-      const period = parseInt(document.getElementById("period").value);
-      const currentSavings = parseCurrency(document.getElementById("currentSavings").value);
-      const currentContribution = parseCurrency(document.getElementById("currentContribution").value);
-
-      const monthlyRate = rateType === 'annual' ? Math.pow(1 + rate, 1 / 12) - 1 : rate;
-      const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
-      const resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = `<p><strong>Reajuste pela Inflação:</strong><br>Valor atual do objetivo: R$ ${formatMoney(goal)}<br>Valor corrigido pela inflação (${(inflation * 100).toFixed(2).replace('.', ',')}%) em ${period} meses: R$ ${formatMoney(inflatedGoal)}</p>`;
-
-      // Cálculo do investimento único necessário
-      const taxFactor = (1 + monthlyRate) ** period - tax * ((1 + monthlyRate) ** period - 1);
-      const investmentNeeded = inflatedGoal / taxFactor;
-      const difference = investmentNeeded - currentSavings;
-      const comparisonText = difference > 0 
-        ? `Este valor é <strong>R$ ${formatMoney(difference)} maior</strong> do que o valor que você já tem guardado.`
-        : `Este valor é <strong>R$ ${formatMoney(Math.abs(difference))} menor</strong> do que o valor que você já tem guardado.`;
-      const resultUnico = calculateCompoundInterest(investmentNeeded, 0, monthlyRate, period, tax, goal, inflation);
-      const brutoUnico = resultUnico.valoresMensais.slice(1).map(m => m.totalAcumulado);
-      const liquidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.valorLiquido);
-      const investidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.totalInvestido);
-      const objetivoCorrigidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.objetivoCorrigido);
-      resultDiv.innerHTML += `<p><strong>Investimento Único Necessário:</strong><br>Para atingir seu objetivo no prazo desejado, sem poupar mensalmente, você precisaria investir <strong>R$ ${formatMoney(investmentNeeded)}</strong> hoje.<br>${comparisonText}</p>`;
-      document.getElementById("chartUnicoContainer").style.display = "block";
-      fillDataTable("tableUnico", resultUnico.valoresMensais, goal, inflation);
-      drawChart(document.getElementById("chartUnico").getContext("2d"), brutoUnico, liquidoUnico, investidoUnico, objetivoCorrigidoUnico, "#6f42c1", "#9f75e5", "#4b2882", "#333333");
-      // Cálculo do plano ideal (quanto poupar mensalmente)
-      let low = 0, high = inflatedGoal, Y = 0;
-      let resultIdeal;
-      for (let i = 0; i < 100; i++) {
-        Y = (low + high) / 2;
-        resultIdeal = calculateCompoundInterest(currentSavings, Y, monthlyRate, period, tax, goal, inflation);
-        const valorLiquidoFinal = resultIdeal.valoresMensais[period].valorLiquido;
-        const objetivoFinal = resultIdeal.valoresMensais[period].objetivoCorrigido;
-        if (Math.abs(valorLiquidoFinal - objetivoFinal) < 0.01) break;
-        if (valorLiquidoFinal > objetivoFinal) high = Y;
-        else low = Y;
-      }
-      const brutoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.totalAcumulado);
-      const liquidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.valorLiquido);
-      const investidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.totalInvestido);
-      const objetivoCorrigidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.objetivoCorrigido);
-      resultDiv.innerHTML += `<p><strong>Plano Ideal:</strong><br>Você precisará poupar R$ ${formatMoney(Y)} por mês para atingir seu objetivo corrigido.</p>`;
-      document.getElementById("chartIdealContainer").style.display = "block";
-      fillDataTable("tableIdeal", resultIdeal.valoresMensais, goal, inflation);
-      drawChart(document.getElementById("chartIdeal").getContext("2d"), brutoIdeal, liquidoIdeal, investidoIdeal, objetivoCorrigidoIdeal, "#28a745", "#218838", "#046c4e", "#333333"); // Cálculo com a poupança atual
-      const resultAtual = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, 1200, tax, goal, inflation);
-      const valoresMensais = resultAtual.valoresMensais;
-      let months = 0;
-      let objetivoAtingido = false;
-      for (let i = 1; i < valoresMensais.length; i++) {
-        if (valoresMensais[i].valorLiquido > valoresMensais[i].objetivoCorrigido) {
-          months = i;
-          objetivoAtingido = true;
-          break;
-        }
-      }
-      if (!objetivoAtingido) {
-        months = valoresMensais.length - 1;
-      }
-      const maxMonths = Math.max(months + 1, period + 1);
-      const brutoAtual = valoresMensais.slice(1, maxMonths).map(m => m.totalAcumulado);
-      const liquidoAtual = valoresMensais.slice(1, maxMonths).map(m => m.valorLiquido);
-      const investidoAtual = valoresMensais.slice(1, maxMonths).map(m => m.totalInvestido);
-      const objetivoCorrigidoAtual = valoresMensais.slice(1, maxMonths).map(m => m.objetivoCorrigido);
-      resultDiv.innerHTML += `<p><strong>Com a Poupança Atual:</strong><br>Você atingirá o objetivo em aproximadamente ${months} meses, considerando a inflação progressiva a cada 12 meses.</p>`;
-      document.getElementById("chartAtualContainer").style.display = "block";
-      fillDataTable("tableAtual", valoresMensais.slice(0, maxMonths), goal, inflation);
-      drawChart(document.getElementById("chartAtual").getContext("2d"), brutoAtual, liquidoAtual, investidoAtual, objetivoCorrigidoAtual, "#d4af37", "#b38e2e", "#f5e2a9", "#333333");  // Calcular a rentabilidade anual necessária
-      const requiredRate = calculateRequiredRate(goal, currentSavings, currentContribution, period, tax, inflation);
-      const brutoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalAcumulado);
-      const liquidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.valorLiquido);
-      const investidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalInvestido);
-      const objetivoCorrigidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.objetivoCorrigido);
-      resultDiv.innerHTML += `<p><strong>Rentabilidade Necessária:</strong><br>Para atingir seu objetivo em ${period} meses, mantendo o aporte mensal de R$ ${formatMoney(currentContribution)}, você precisaria de uma rentabilidade anual de <strong>${(requiredRate.annualRate * 100).toFixed(2).replace('.', ',')}%</strong>.</p>`;
-      resultText = resultDiv.innerText;
-      document.getElementById("chartRentabilidadeContainer").style.display = "block";
-      fillDataTable("tableRentabilidade", requiredRate.valoresMensais, goal, inflation);
-      drawChart(document.getElementById("chartRentabilidade").getContext("2d"), brutoRentabilidade, liquidoRentabilidade, investidoRentabilidade, objetivoCorrigidoRentabilidade, "#6f42c1", "#9f75e5", "#4b2882", "#333333");
-      // Gerar análise automatizada
-      generateRecommendation(goalDescription, goal, currentSavings, currentContribution, Y, months, requiredRate.annualRate, rateType === 'annual' ? rate : Math.pow(1 + rate, 12) - 1);
-    }
-
-    window.onload = () => {
-      toggleTaxInput("tax", "15,00 %");
-      toggleTaxInput("inflation", "5,00 %");
-    };
-  </script>
+    <!-- Módulos JavaScript -->
+    <script src="modules/calculations.js" type="module"></script>
+    <script src="modules/storage.js" type="module"></script>
+    <script src="modules/charts.js" type="module"></script>
+    <script src="modules/export.js" type="module"></script>
 </body>
 </html>
