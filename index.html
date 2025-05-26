@@ -827,10 +827,13 @@ ${resultBoxText}`;
         analysis += `<p>A rentabilidade informada de ${(rate * 100).toFixed(2).replace('.', ',')}% ao ano é suficiente para atingir o objetivo no prazo desejado, desde que sejam mantidos os aportes mensais adequados.</p>`;
       }
       
-      recommendationText.innerHTML = analysis;
-      recommendationDiv.style.display = 'block';
-      
-      // Mostrar     function calculateSavings() {
+      recommendationText.innerHTML = analysis      recommendationDiv.style.display = \'block\';
+
+      // Mostrar o botão do WhatsApp
+      whatsappButton.style.display = \'block\';
+    }
+
+    function calculateSavings() {
       // Armazenar o texto do objetivo para uso posterior
       goalDescriptionText = document.getElementById(\'goalDescription\').value;
       
@@ -939,8 +942,11 @@ ${resultBoxText}`;
       
       // Gerar análise automatizada
       generateRecommendation(goalDescription, goal, currentSavings, currentContribution, Y, months, requiredRate.annualRate, rateType === \'annual\' ? rate : Math.pow(1 + rate, 12) - 1);
-    }   toggleTaxInput('tax', '15,00 %');
-      toggleTaxInput('inflation', '5,00 %');
+    }
+
+    window.onload = () => {
+      toggleTaxInput(\'tax\', \'15,00 %\');
+      toggleTaxInput(\'inflation\', \'5,00 %\');
     };
   </script>
 </body>
