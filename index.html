@@ -1,46 +1,997 @@
-<html>
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-    <title>Meu Primeiro Site</title>  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Novos Objetivos</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --verde-esmeralda: #046c4e;
+      --verde-claro: #28a745;
+      --verde-medio: #218838;
+      --dourado: #d4af37;
+      --dourado-claro: #f5e2a9;
+      --dourado-escuro: #b38e2e;
+      --roxo: #6f42c1;
+      --roxo-claro: #9f75e5;
+      --roxo-escuro: #4b2882;
+      --fundo-claro: #f9f9f9;
+      --vermelho-translucido: rgba(255, 0, 0, 0.1);
+      --azul-translucido: rgba(0, 0, 255, 0.1);
+      --roxo-translucido: rgba(111, 66, 193, 0.1);
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--fundo-claro);
+      color: var(--verde-esmeralda);
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 1200px;
+    }
+    h1 {
+      color: var(--dourado);
+      text-align: center;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border: 2px solid var(--dourado);
+      background-color: white;
+      border-radius: 8px;
+    }
+    .recommendation {
+      margin: 30px 0;
+      padding: 20px;
+      border: 2px solid var(--verde-esmeralda);
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .recommendation h3 {
+      color: var(--verde-esmeralda);
+      margin-top: 0;
+      border-bottom: 1px solid var(--dourado-claro);
+      padding-bottom: 10px;
+    }
+    .whatsapp-button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 20px 0;
+      background-color: #25D366; /* WhatsApp green */
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: background-color 0.3s ease;
+    }
+    .whatsapp-button:hover {
+      background-color: #128C7E; /* Darker WhatsApp green */
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .row > div {
+      flex: 1;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      box-sizing: border-box;
+      border: 1px solid var(--verde-esmeralda);
+      border-radius: 5px;
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    button {
+      margin-top: 15px;
+      padding: 12px;
+      background-color: var(--verde-esmeralda);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #03563f;
+    }
+    .chart-container {
+      margin-top: 30px;
+      position: relative;
+      border: 1px solid var(--dourado-claro);
+      border-radius: 8px;
+      padding: 15px;
+      background-color: white;
+    }
+    .chart-title {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: var(--verde-esmeralda);
+    }
+    .chart-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .chart-nav button {
+      padding: 8px 15px;
+      margin-top: 0;
+      width: auto;
+      font-size: 14px;
+    }
+    .chart-content {
+      display: flex;
+      overflow: hidden;
+      position: relative;
+      height: 400px;
+    }
+    .chart-slide {
+      flex: 0 0 100%;
+      transition: transform 0.3s ease;
+    }
+    .table-slide {
+      flex: 0 0 100%;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .data-table th, .data-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: right;
+    }
+    .data-table th {
+      background-color: var(--fundo-claro);
+      color: var(--verde-esmeralda);
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
+    .data-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .data-table tr:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
 </head>
-<style>
-
-body {
-font-family: Arial, sans-serif;
-background-color: #f0f0f0;
-margin: 0;
-padding: 20px;
-}
-h1 {
-color: #333;
-text-align: center;
-}
-p {
-color: #666;
-line-height: 1.5;
-text-align: center;
-}
-button {
-background-color: #4CAF50;
-color: white;
-padding: 10px 15px;
-border: none;
-border-radius: 4px;
-cursor: pointer;
-text-align: center;
-display: block;
-margin: 20px auto;
-}
-button:hover {
-background-color: #45a049;
-}
-
+<body>
+  <h1>Calculadora de Objetivos</h1>
+  <form id="savingsForm">
+    <label for="goalDescription">Qual é o seu objetivo financeiro e por que ele é importante para você?</label>
+    <textarea id="goalDescription" placeholder="Ex: Comprar um imóvel para ter segurança e estabilidade para minha família, ou fazer uma viagem internacional para conhecer novas culturas..."></textarea>
     
-</style>
+    <label for="goal">Valor do Objetivo (R$):</label>
+    <input type="text" id="goal" required oninput="formatCurrency(this)">
 
+    <label for="period">Prazo (em meses):</label>
+    <input type="number" id="period" required>
+
+    <div class="row">
+      <div>
+        <label for="rate">Taxa de Juros (%):</label>
+        <input type="text" id="rate" required oninput="formatPercentage(this)">
+      </div>
+      <div>
+        <label for="rateType">Tipo de Taxa:</label>
+        <select id="rateType">
+          <option value="annual">Anual</option>
+          <option value="monthly">Mensal</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Você sabe a alíquota de imposto sobre o rendimento?</label>
+    <div class="row">
+      <div>
+        <select id="knowsTax" onchange="toggleTaxInput('tax', '15,00 %')">
+          <option value="no">Não</option>
+          <option value="yes">Sim</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" id="tax" placeholder="15,00 %" oninput="formatPercentage(this)">
+      </div>
+    </div>
+
+    <label>Você sabe a taxa de inflação dos últimos 12 meses?</label>
+    <div class="row">
+      <div>
+        <select id="knowsInflation" onchange="toggleTaxInput('inflation', '5,00 %')">
+          <option value="no">Não</option>
+          <option value="yes">Sim</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" id="inflation" placeholder="5,00 %" oninput="formatPercentage(this)">
+      </div>
+    </div>
+
+    <label for="currentSavings">Valor já Guardado (R$):</label>
+    <input type="text" id="currentSavings" required oninput="formatCurrency(this)">
+
+    <label for="currentContribution">Quanto você poupa atualmente por mês (R$):</label>
+    <input type="text" id="currentContribution" required oninput="formatCurrency(this)">
+
+    <button type="button" onclick="calculateSavings()">Calcular</button>
+  </form>
+
+  <div id="result" class="result"></div>
+  
+  <div id="recommendation" class="recommendation" style="display: none;">
+    <h3>Análise Automatizada</h3>
+    <div id="recommendationText"></div>
+  </div>
+  
+  <!-- Botão WhatsApp fora da caixa de análise automatizada -->
+  <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
+    Avançar para análise personalizada
+  </a>
+  
+  <div id="chartUnicoContainer" class="chart-container" style="display: none;">
+    <div class="chart-title">Evolução do Investimento Único</div>
+    <div class="chart-nav">
+      <button onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
+      <button onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartUnicoSlide" class="chart-slide">
+        <canvas id="chartUnico"></canvas>
+      </div>
+      <div id="tableUnicoSlide" class="table-slide" style="display: none;">
+        <table id="tableUnico" class="data-table">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Total Investido</th>
+              <th>Juros</th>
+              <th>Total Juros</th>
+              <th>Total Acumulado</th>
+              <th>Imposto</th>
+              <th>Valor Líquido</th>
+              <th>Objetivo Corrigido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div id="chartIdealContainer" class="chart-container" style="display: none;">
+    <div class="chart-title">Evolução do Plano Ideal</div>
+    <div class="chart-nav">
+      <button onclick="showChartSlide('Ideal', 'chart')">Gráfico</button>
+      <button onclick="showChartSlide('Ideal', 'table')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartIdealSlide" class="chart-slide">
+        <canvas id="chartIdeal"></canvas>
+      </div>
+      <div id="tableIdealSlide" class="table-slide" style="display: none;">
+        <table id="tableIdeal" class="data-table">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Total Investido</th>
+              <th>Juros</th>
+              <th>Total Juros</th>
+              <th>Total Acumulado</th>
+              <th>Imposto</th>
+              <th>Valor Líquido</th>
+              <th>Objetivo Corrigido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div id="chartAtualContainer" class="chart-container" style="display: none;">
+    <div class="chart-title">Evolução da Poupança Atual</div>
+    <div class="chart-nav">
+      <button onclick="showChartSlide('Atual', 'chart')">Gráfico</button>
+      <button onclick="showChartSlide('Atual', 'table')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartAtualSlide" class="chart-slide">
+        <canvas id="chartAtual"></canvas>
+      </div>
+      <div id="tableAtualSlide" class="table-slide" style="display: none;">
+        <table id="tableAtual" class="data-table">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Total Investido</th>
+              <th>Juros</th>
+              <th>Total Juros</th>
+              <th>Total Acumulado</th>
+              <th>Imposto</th>
+              <th>Valor Líquido</th>
+              <th>Objetivo Corrigido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div id="chartRentabilidadeContainer" class="chart-container" style="display: none;">
+    <div class="chart-title">Evolução da Rentabilidade Necessária</div>
+    <div class="chart-nav">
+      <button onclick="showChartSlide('Rentabilidade', 'chart')">Gráfico</button>
+      <button onclick="showChartSlide('Rentabilidade', 'table')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartRentabilidadeSlide" class="chart-slide">
+        <canvas id="chartRentabilidade"></canvas>
+      </div>
+      <div id="tableRentabilidadeSlide" class="table-slide" style="display: none;">
+        <table id="tableRentabilidade" class="data-table">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Total Investido</th>
+              <th>Juros</th>
+              <th>Total Juros</th>
+              <th>Total Acumulado</th>
+              <th>Imposto</th>
+              <th>Valor Líquido</th>
+              <th>Objetivo Corrigido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Variáveis globais para armazenar os resultados e textos
+    let goalDescriptionText = '';
+    let resultText = '';
     
-<body >
-<h1>Bem-vindo ao Meu Site</h1>
-<p>Este é um parágrafo de texto.</p>
-<button>Clique Aqui</button>
+    function formatCurrency(input) {
+      let value = input.value.replace(/\D/g, '');
+      value = (parseFloat(value) / 100).toFixed(2);
+      input.value = 'R$ ' + value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.').replace(/\.(\d{2})$/, ',$1');
+    }
+
+    function formatPercentage(input) {
+      let value = input.value.replace(/\D/g, '');
+      value = (parseFloat(value) / 100).toFixed(2);
+      input.value = value.replace('.', ',') + ' %';
+    }
+
+    function toggleTaxInput(id, defaultValue) {
+      const select = document.getElementById(id === 'tax' ? 'knowsTax' : 'knowsInflation');
+      const input = document.getElementById(id);
+      input.disabled = select.value !== 'yes';
+      input.value = select.value === 'yes' ? '' : defaultValue;
+    }
+
+    function parseCurrency(value) {
+      return parseFloat(value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+    }
+
+    function parsePercentage(value) {
+      return parseFloat(value.replace('%', '').replace(',', '.')) / 100 || 0;
+    }
+
+    // Função para formatar valores monetários com sempre duas casas decimais
+    function formatMoney(value) {
+      return value.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    // Função para alternar entre visualização de gráfico e tabela
+    function showChartSlide(chartId, slideType) {
+      const chartSlide = document.getElementById(`chart${chartId}Slide`);
+      const tableSlide = document.getElementById(`table${chartId}Slide`);
+      
+      if (slideType === 'chart') {
+        chartSlide.style.display = 'block';
+        tableSlide.style.display = 'none';
+      } else {
+        chartSlide.style.display = 'none';
+        tableSlide.style.display = 'block';
+      }
+    }
+
+    // Função para abrir o WhatsApp com a mensagem personalizada
+    function openWhatsAppChat() {
+      // Obter o texto do objetivo e da caixa de resposta
+      const goalText = goalDescriptionText;
+      const resultBoxText = resultText;
+      
+     // Criar a mensagem para o WhatsApp
+const message = `Oi Hugo, queria tua ajuda com o meu objetivo:
+${goalText}
+
+Segue o resumo:
+${resultBoxText}`;
+      
+      // Codificar a mensagem para URL
+      const encodedMessage = encodeURIComponent(message);
+      
+      // Criar o link do WhatsApp usando a API correta
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=5581994297920&text=${encodedMessage}`;
+      
+      // Abrir o link em uma nova janela
+      window.open(whatsappUrl, '_blank');
+    }
+
+    // Função para preencher a tabela de dados
+    function fillDataTable(tableId, data, goal, inflation) {
+      const table = document.getElementById(tableId);
+      const tbody = table.querySelector('tbody');
+      tbody.innerHTML = '';
+      
+      // Começar do mês 1 (não do mês 0)
+      for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        const tr = document.createElement('tr');
+        
+        // Mês
+        const tdMes = document.createElement('td');
+        tdMes.textContent = row.month;
+        tr.appendChild(tdMes);
+        
+        // Total Investido
+        const tdInvestido = document.createElement('td');
+        tdInvestido.textContent = `R$ ${formatMoney(row.totalInvestido)}`;
+        tr.appendChild(tdInvestido);
+        
+        // Juros
+        const tdJuros = document.createElement('td');
+        tdJuros.textContent = `R$ ${formatMoney(row.juros)}`;
+        tr.appendChild(tdJuros);
+        
+        // Total Juros
+        const tdTotalJuros = document.createElement('td');
+        tdTotalJuros.textContent = `R$ ${formatMoney(row.totalJuros)}`;
+        tr.appendChild(tdTotalJuros);
+        
+        // Total Acumulado
+        const tdAcumulado = document.createElement('td');
+        tdAcumulado.textContent = `R$ ${formatMoney(row.totalAcumulado)}`;
+        tr.appendChild(tdAcumulado);
+        
+        // Imposto
+        const tdImposto = document.createElement('td');
+        tdImposto.textContent = `R$ ${formatMoney(row.imposto)}`;
+        tr.appendChild(tdImposto);
+        
+        // Valor Líquido
+        const tdLiquido = document.createElement('td');
+        tdLiquido.textContent = `R$ ${formatMoney(row.valorLiquido)}`;
+        tr.appendChild(tdLiquido);
+        
+        // Objetivo Corrigido
+        const tdObjetivo = document.createElement('td');
+        tdObjetivo.textContent = `R$ ${formatMoney(row.objetivoCorrigido)}`;
+        tr.appendChild(tdObjetivo);
+        
+        tbody.appendChild(tr);
+      }
+    }
+
+    function drawChart(ctx, bruto, liquido, investido, corBruto, corLiquido, corInvestido) {
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: bruto.map((_, i) => i + 1), // Começar do mês 1
+          datasets: [
+            {
+              label: 'Valor Investido',
+              data: investido,
+              borderColor: corInvestido,
+              pointRadius: 0,
+              fill: false,
+              tension: 0.4
+            },
+            {
+              label: 'Valor Líquido',
+              data: liquido,
+              borderColor: corLiquido,
+              pointRadius: 0,
+              fill: '-1',
+              backgroundColor: 'rgba(0, 0, 255, 0.1)',
+              tension: 0.4
+            },
+            {
+              label: 'Valor Bruto',
+              data: bruto,
+              borderColor: corBruto,
+              pointRadius: 0,
+              fill: '-1',
+              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          elements: { point: { radius: 0 } },
+          scales: {
+            x: { 
+              grid: { drawTicks: false, drawBorder: false },
+              title: {
+                display: true,
+                text: 'Meses'
+              }
+            },
+            y: { 
+              grid: { drawTicks: false, drawBorder: false },
+              title: {
+                display: true,
+                text: 'Valor (R$)'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Função para calcular juros compostos com aportes mensais
+    function calculateCompoundInterest(initialValue, monthlyContribution, monthlyRate, periods, tax = 0, goal = 0, inflation = 0) {
+      let totalValue = initialValue;
+      let totalInvested = initialValue;
+      let totalJuros = 0;
+      let objetivoCorrigido = goal;
+      
+      const valoresMensais = [];
+      
+      // Mês 0 (inicial) - não será exibido na tabela, mas é usado para cálculos
+      valoresMensais.push({
+        month: 0,
+        juros: 0,
+        totalInvestido: totalInvested,
+        totalJuros: 0,
+        imposto: 0,
+        valorLiquido: totalValue,
+        totalAcumulado: totalValue,
+        objetivoCorrigido: objetivoCorrigido
+      });
+      
+      for (let i = 1; i <= periods; i++) {
+        // Calcular juros sobre o valor total
+        const jurosDoMes = totalValue * monthlyRate;
+        totalJuros += jurosDoMes;
+        
+        // Adicionar aporte mensal
+        totalInvested += monthlyContribution;
+        
+        // Atualizar valor total: valor anterior + juros + aporte
+        totalValue = totalValue + jurosDoMes + monthlyContribution;
+        
+        // Calcular imposto sobre o total de juros
+        const impostoTotal = totalJuros * tax;
+        
+        // Calcular valor líquido: total acumulado - imposto
+        const valorLiquido = totalValue - impostoTotal;
+        
+        // Atualizar objetivo corrigido pela inflação a cada 12 meses
+        if (i % 12 === 0) {
+          objetivoCorrigido = objetivoCorrigido * (1 + inflation);
+        }
+        
+        // Registrar valores mensais para gráfico e análise
+        valoresMensais.push({
+          month: i,
+          juros: jurosDoMes,
+          totalInvestido: totalInvested,
+          totalJuros: totalJuros,
+          imposto: impostoTotal,
+          valorLiquido: valorLiquido,
+          totalAcumulado: totalValue,
+          objetivoCorrigido: objetivoCorrigido
+        });
+      }
+      
+      return {
+        finalValue: totalValue,
+        totalInvested: totalInvested,
+        totalJuros: totalJuros,
+        totalImposto: totalJuros * tax,
+        valoresMensais: valoresMensais
+      };
+    }
+
+    // Função para calcular a taxa anual necessária para atingir o objetivo no prazo desejado
+    function calculateRequiredRate(goal, currentSavings, monthlyContribution, period, tax, inflation) {
+      // Ajustar o objetivo pela inflação
+      const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
+      
+      // Busca binária para encontrar a taxa mensal necessária
+      let lowRate = 0;
+      let highRate = 1; // 100% ao mês como limite superior inicial
+      let requiredMonthlyRate = 0;
+      let iterations = 0;
+      let result;
+      
+      while (iterations < 100) { // Limite de iterações para evitar loop infinito
+        requiredMonthlyRate = (lowRate + highRate) / 2;
+        result = calculateCompoundInterest(currentSavings, monthlyContribution, requiredMonthlyRate, period, tax, goal, inflation);
+        
+        // Verificar se o valor líquido final está próximo o suficiente do objetivo
+        const valorLiquidoFinal = result.valoresMensais[period].valorLiquido;
+        const objetivoFinal = result.valoresMensais[period].objetivoCorrigido;
+        
+        if (Math.abs(valorLiquidoFinal - objetivoFinal) < 0.01) {
+          break;
+        }
+        
+        // Ajusta os limites da busca
+        if (valorLiquidoFinal > objetivoFinal) {
+          highRate = requiredMonthlyRate;
+        } else {
+          lowRate = requiredMonthlyRate;
+        }
+        
+        iterations++;
+      }
+      
+      // Converter taxa mensal para anual: (1 + taxa_mensal)^12 - 1
+      const requiredAnnualRate = Math.pow(1 + requiredMonthlyRate, 12) - 1;
+      
+      return {
+        monthlyRate: requiredMonthlyRate,
+        annualRate: requiredAnnualRate,
+        finalValue: result.finalValue,
+        finalGoal: inflatedGoal,
+        valoresMensais: result.valoresMensais
+      };
+    }
+
+    // Função para resumir o texto do objetivo
+    function summarizeGoalText(text) {
+      if (!text || text.trim() === '') {
+        return '';
+      }
+      
+      // Palavras-chave para identificar tipos de objetivos
+      const keywords = {
+        imovel: ['imóvel', 'casa', 'apartamento', 'moradia', 'residência', 'propriedade', 'terreno'],
+        viagem: ['viagem', 'viajar', 'turismo', 'férias', 'exterior', 'internacional', 'conhecer'],
+        educacao: ['educação', 'faculdade', 'universidade', 'curso', 'estudo', 'formação', 'pós-graduação', 'mestrado', 'doutorado'],
+        aposentadoria: ['aposentadoria', 'aposentar', 'independência financeira', 'liberdade financeira', 'renda passiva'],
+        veiculo: ['carro', 'veículo', 'automóvel', 'moto', 'motocicleta', 'caminhão'],
+        negocio: ['negócio', 'empresa', 'empreendimento', 'startup', 'investimento', 'sociedade'],
+        saude: ['saúde', 'tratamento', 'cirurgia', 'médico', 'hospital', 'plano de saúde'],
+        familia: ['família', 'filhos', 'casamento', 'herança', 'futuro dos filhos']
+      };
+      
+      // Converter texto para minúsculas para facilitar a comparação
+      const lowerText = text.toLowerCase();
+      
+      // Identificar o tipo de objetivo
+      let goalType = '';
+      let maxMatches = 0;
+      
+      for (const [type, words] of Object.entries(keywords)) {
+        const matches = words.filter(word => lowerText.includes(word)).length;
+        if (matches > maxMatches) {
+          maxMatches = matches;
+          goalType = type;
+        }
+      }
+      
+      // Criar resumo com base no tipo de objetivo identificado
+      let summary = '';
+      
+      switch (goalType) {
+        case 'imovel':
+          summary = 'aquisição de imóvel';
+          break;
+        case 'viagem':
+          summary = 'realização de viagem';
+          break;
+        case 'educacao':
+          summary = 'investimento em educação';
+          break;
+        case 'aposentadoria':
+          summary = 'planejamento para aposentadoria';
+          break;
+        case 'veiculo':
+          summary = 'compra de veículo';
+          break;
+        case 'negocio':
+          summary = 'investimento em negócio próprio';
+          break;
+        case 'saude':
+          summary = 'cuidados com saúde';
+          break;
+        case 'familia':
+          summary = 'planejamento familiar';
+          break;
+        default:
+          // Se não conseguir identificar um tipo específico, extrair as primeiras palavras
+          const words = lowerText.split(' ');
+          if (words.length > 3) {
+            summary = words.slice(0, 3).join(' ') + '...';
+          } else {
+            summary = 'objetivo financeiro';
+          }
+      }
+      
+      // Verificar se há menção à importância ou motivo
+      const importanceKeywords = ['importante', 'importância', 'significa', 'porque', 'pois', 'para', 'motivo'];
+      let hasImportance = importanceKeywords.some(word => lowerText.includes(word));
+      
+      if (hasImportance) {
+        summary += ' com significado pessoal';
+      }
+      
+      return summary;
+    }
+
+    // Função para gerar análise automatizada
+    function generateRecommendation(goalDescription, goal, currentSavings, currentContribution, idealContribution, months, requiredRate, rate) {
+      const recommendationDiv = document.getElementById('recommendation');
+      const recommendationText = document.getElementById('recommendationText');
+      const whatsappButton = document.getElementById('whatsappButton');
+      
+      // Extrair informações relevantes
+      const goalGap = goal - currentSavings;
+      const contributionGap = idealContribution - currentContribution;
+      const contributionPercentage = (currentContribution / idealContribution) * 100;
+      const rateGap = requiredRate - rate;
+      
+      let analysis = '';
+      
+      // Análise da situação atual - começando diretamente aqui, sem introdução sobre o objetivo
+      if (currentSavings > 0) {
+        const savingsPercentage = (currentSavings / goal) * 100;
+        analysis += `<p>Valor já guardado: R$ ${formatMoney(currentSavings)}, o que representa ${savingsPercentage.toFixed(1).replace('.', ',')}% do objetivo. `;
+        
+        if (savingsPercentage < 10) {
+          analysis += `Este é um bom começo, mas ainda há um longo caminho pela frente.</p>`;
+        } else if (savingsPercentage < 30) {
+          analysis += `Já foram dados passos importantes em direção ao objetivo.</p>`;
+        } else if (savingsPercentage < 60) {
+          analysis += `Uma parte significativa do caminho já foi percorrida.</p>`;
+        } else {
+          analysis += `O objetivo está muito próximo de ser alcançado.</p>`;
+        }
+      } else {
+        analysis += `<p>Ainda não foi iniciada a poupança para este objetivo específico.</p>`;
+      }
+      
+      // Análise do aporte mensal
+      if (currentContribution > 0) {
+        if (contributionPercentage >= 100) {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} é suficiente para atingir o objetivo no prazo desejado.</p>`;
+        } else if (contributionPercentage >= 80) {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} está próximo do ideal. Um pequeno ajuste de R$ ${formatMoney(contributionGap)} a mais por mês seria o suficiente para atingir o objetivo no prazo desejado.</p>`;
+        } else if (contributionPercentage >= 50) {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} representa um bom esforço, mas para atingir o objetivo no prazo desejado, seria necessário aumentar para R$ ${formatMoney(idealContribution)} por mês (um acréscimo de R$ ${formatMoney(contributionGap)}).</p>`;
+        } else {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} está significativamente abaixo do ideal. Para atingir o objetivo no prazo desejado, seria necessário aumentar para R$ ${formatMoney(idealContribution)} por mês.</p>`;
+        }
+      } else {
+        analysis += `<p>Não estão sendo feitos aportes mensais. Para atingir o objetivo no prazo desejado, seria necessário poupar R$ ${formatMoney(idealContribution)} por mês.</p>`;
+      }
+      
+      // Análise da rentabilidade
+      if (rateGap > 0) {
+        const rateGapPercentage = rateGap * 100;
+        if (rateGapPercentage > 10) {
+          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace('.', ',')}% ao ano, o que está ${rateGapPercentage.toFixed(2).replace('.', ',')} pontos percentuais acima da taxa informada. Esta diferença é significativa e pode representar um risco maior.</p>`;
+        } else {
+          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace('.', ',')}% ao ano, o que está ${rateGapPercentage.toFixed(2).replace('.', ',')} pontos percentuais acima da taxa informada. Esta diferença é relativamente pequena e pode ser alcançável com ajustes na estratégia de investimento.</p>`;
+        }
+      } else {
+        analysis += `<p>A rentabilidade informada de ${(rate * 100).toFixed(2).replace('.', ',')}% ao ano é suficiente para atingir o objetivo no prazo desejado, desde que sejam mantidos os aportes mensais adequados.</p>`;
+      }
+      
+      recommendationText.innerHTML = analysis;
+      recommendationDiv.style.display = 'block';
+      
+      // Mostrar o botão do WhatsApp
+      whatsappButton.style.display = 'block';
+    }
+
+    function calculateSavings() {
+      // Armazenar o texto do objetivo para uso posterior
+      goalDescriptionText = document.getElementById('goalDescription').value;
+      
+      // Resetar os gráficos antes de desenhar novos
+      const chartUnico = Chart.getChart("chartUnico");
+      if (chartUnico) chartUnico.destroy();
+      const chartIdeal = Chart.getChart("chartIdeal");
+      if (chartIdeal) chartIdeal.destroy();
+      const chartAtual = Chart.getChart("chartAtual");
+      if (chartAtual) chartAtual.destroy();
+      const chartRentabilidade = Chart.getChart("chartRentabilidade");
+      if (chartRentabilidade) chartRentabilidade.destroy();
+      
+      const goalDescription = document.getElementById('goalDescription').value;
+      const goal = parseCurrency(document.getElementById('goal').value);
+      const rate = parsePercentage(document.getElementById('rate').value);
+      const rateType = document.getElementById('rateType').value;
+      const knowsTax = document.getElementById('knowsTax').value;
+      const tax = knowsTax === 'yes' ? parsePercentage(document.getElementById('tax').value) : 0.15;
+      const knowsInflation = document.getElementById('knowsInflation').value;
+      const inflation = knowsInflation === 'yes' ? parsePercentage(document.getElementById('inflation').value) : 0.05;
+      const period = parseInt(document.getElementById('period').value);
+      const currentSavings = parseCurrency(document.getElementById('currentSavings').value);
+      const currentContribution = parseCurrency(document.getElementById('currentContribution').value);
+
+      const monthlyRate = rateType === 'annual' ? Math.pow(1 + rate, 1 / 12) - 1 : rate;
+      const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `<p><strong>Reajuste pela Inflação:</strong><br>Valor atual do objetivo: R$ ${formatMoney(goal)}<br>Valor corrigido pela inflação (${(inflation * 100).toFixed(2).replace('.', ',')}%) em ${period} meses: R$ ${formatMoney(inflatedGoal)}</p>`;
+
+      // Cálculo do investimento único necessário
+      // Fórmula: PV = VF / (1 + i)^n
+      // Onde VF é o valor futuro (objetivo corrigido), i é a taxa, n é o período
+      // Considerando o imposto: PV = VF / [(1 + i)^n - imposto * ((1 + i)^n - 1)]
+      
+      const taxFactor = (1 + monthlyRate) ** period - tax * ((1 + monthlyRate) ** period - 1);
+      const investmentNeeded = inflatedGoal / taxFactor;
+      
+      // Comparação com o valor já guardado
+      const difference = investmentNeeded - currentSavings;
+      const comparisonText = difference > 0 
+        ? `Este valor é <strong>R$ ${formatMoney(difference)} maior</strong> do que o valor que você já tem guardado.`
+        : `Este valor é <strong>R$ ${formatMoney(Math.abs(difference))} menor</strong> do que o valor que você já tem guardado.`;
+      
+      // Cálculo do valor bruto e líquido para o investimento único
+      const resultUnico = calculateCompoundInterest(investmentNeeded, 0, monthlyRate, period, tax, goal, inflation);
+      
+      // Extrair dados para o gráfico (começando do mês 1)
+      const brutoUnico = resultUnico.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.totalInvestido);
+      
+      resultDiv.innerHTML += `<p><strong>Investimento Único Necessário:</strong><br>Para atingir seu objetivo no prazo desejado, sem poupar mensalmente, você precisaria investir <strong>R$ ${formatMoney(investmentNeeded)}</strong> hoje.<br>${comparisonText}</p>`;
+      
+      // Mostrar o container do gráfico
+      document.getElementById('chartUnicoContainer').style.display = 'block';
+      
+      // Preencher a tabela de dados
+      fillDataTable('tableUnico', resultUnico.valoresMensais, goal, inflation);
+      
+      // Desenhar o gráfico do investimento único
+      drawChart(document.getElementById('chartUnico').getContext('2d'), brutoUnico, liquidoUnico, investidoUnico, '#6f42c1', '#9f75e5', '#4b2882');
+
+      // Cálculo do plano ideal (quanto poupar mensalmente)
+      // Fórmula: A = (VF - PV * (1 + i)^n) / ((1 + i)^n - 1) * i
+      // Onde A é o aporte mensal, VF é o valor futuro (objetivo), PV é o valor presente (valor já guardado)
+      
+      let low = 0, high = inflatedGoal, Y = 0;
+      let resultIdeal;
+      
+      for (let i = 0; i < 100; i++) {
+        Y = (low + high) / 2;
+        resultIdeal = calculateCompoundInterest(currentSavings, Y, monthlyRate, period, tax, goal, inflation);
+        
+        const valorLiquidoFinal = resultIdeal.valoresMensais[period].valorLiquido;
+        const objetivoFinal = resultIdeal.valoresMensais[period].objetivoCorrigido;
+        
+        if (Math.abs(valorLiquidoFinal - objetivoFinal) < 0.01) break;
+        if (valorLiquidoFinal > objetivoFinal) high = Y;
+        else low = Y;
+      }
+      
+      // Extrair dados para o gráfico (começando do mês 1)
+      const brutoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.totalInvestido);
+
+      resultDiv.innerHTML += `<p><strong>Plano Ideal:</strong><br>Você precisará poupar R$ ${formatMoney(Y)} por mês para atingir seu objetivo corrigido.</p>`;
+
+      // Mostrar o container do gráfico
+      document.getElementById('chartIdealContainer').style.display = 'block';
+      
+      // Preencher a tabela de dados
+      fillDataTable('tableIdeal', resultIdeal.valoresMensais, goal, inflation);
+      
+      // Desenhar o gráfico do plano ideal
+      drawChart(document.getElementById('chartIdeal').getContext('2d'), brutoIdeal, liquidoIdeal, investidoIdeal, '#28a745', '#218838', '#046c4e');
+
+      // Cálculo com a poupança atual
+      // Calcular quanto tempo levará para atingir o objetivo com o aporte atual
+      // Fórmula: n = ln((VF + A/i) / (PV + A/i)) / ln(1 + i)
+      // Onde n é o número de períodos, VF é o valor futuro (objetivo), PV é o valor presente (valor já guardado), A é o aporte mensal
+      
+      // Calcular juros compostos com aportes mensais e inflação progressiva
+      const resultAtual = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, 1200, tax, goal, inflation);
+      const valoresMensais = resultAtual.valoresMensais;
+      
+      // Encontrar em qual mês o objetivo é atingido, considerando a inflação
+      let months = 0;
+      let objetivoAtingido = false;
+      
+      for (let i = 1; i < valoresMensais.length; i++) {
+        // Verificar se o valor líquido supera o objetivo corrigido
+        if (valoresMensais[i].valorLiquido > valoresMensais[i].objetivoCorrigido) {
+          months = i;
+          objetivoAtingido = true;
+          break;
+        }
+      }
+      
+      // Se o objetivo não foi atingido dentro do limite, usar o último mês calculado
+      if (!objetivoAtingido) {
+        months = valoresMensais.length - 1;
+      }
+      
+      // Extrair dados para o gráfico (começando do mês 1)
+      const brutoAtual = valoresMensais.slice(1, Math.max(months + 1, period + 1)).map(m => m.totalAcumulado);
+      const liquidoAtual = valoresMensais.slice(1, Math.max(months + 1, period + 1)).map(m => m.valorLiquido);
+      const investidoAtual = valoresMensais.slice(1, Math.max(months + 1, period + 1)).map(m => m.totalInvestido);
+      
+      resultDiv.innerHTML += `<p><strong>Com a Poupança Atual:</strong><br>Você atingirá o objetivo em aproximadamente ${months} meses, considerando a inflação progressiva a cada 12 meses.</p>`;
+
+      // Mostrar o container do gráfico
+      document.getElementById('chartAtualContainer').style.display = 'block';
+      
+      // Preencher a tabela de dados
+      fillDataTable('tableAtual', valoresMensais.slice(0, Math.max(months + 1, period + 1)), goal, inflation);
+      
+      // Desenhar o gráfico da poupança atual
+      drawChart(document.getElementById('chartAtual').getContext('2d'), brutoAtual, liquidoAtual, investidoAtual, '#d4af37', '#b38e2e', '#f5e2a9');
+
+      // Calcular a rentabilidade anual necessária para atingir o objetivo no prazo desejado
+      // Fórmula: Determinar i tal que VF = PV * (1 + i)^n + A * ((1 + i)^n - 1) / i
+      // Onde i é a taxa, VF é o valor futuro (objetivo), PV é o valor presente (valor já guardado), A é o aporte mensal, n é o período
+      
+      const requiredRate = calculateRequiredRate(goal, currentSavings, currentContribution, period, tax, inflation);
+      
+      // Extrair dados para o gráfico (começando do mês 1)
+      const brutoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalInvestido);
+      
+      // Adicionar resultado da rentabilidade necessária
+      resultDiv.innerHTML += `<p><strong>Rentabilidade Necessária:</strong><br>Para atingir seu objetivo em ${period} meses, mantendo o aporte mensal de R$ ${formatMoney(currentContribution)}, você precisaria de uma rentabilidade anual de <strong>${(requiredRate.annualRate * 100).toFixed(2).replace('.', ',')}%</strong>.</p>`;
+      
+      // Armazenar o texto da caixa de resposta para uso posterior
+      resultText = resultDiv.innerText;
+      
+      // Mostrar o container do gráfico
+      document.getElementById('chartRentabilidadeContainer').style.display = 'block';
+      
+      // Preencher a tabela de dados
+      fillDataTable('tableRentabilidade', requiredRate.valoresMensais, goal, inflation);
+      
+      // Desenhar o gráfico da rentabilidade necessária
+      drawChart(document.getElementById('chartRentabilidade').getContext('2d'), brutoRentabilidade, liquidoRentabilidade, investidoRentabilidade, '#6f42c1', '#9f75e5', '#4b2882');
+      
+      // Gerar análise automatizada
+      generateRecommendation(goalDescription, goal, currentSavings, currentContribution, Y, months, requiredRate.annualRate, rateType === 'annual' ? rate : Math.pow(1 + rate, 12) - 1);
+    }
+
+    window.onload = () => {
+      toggleTaxInput('tax', '15,00 %');
+      toggleTaxInput('inflation', '5,00 %');
+    };
+  </script>
 </body>
 </html>
